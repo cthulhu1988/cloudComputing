@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "../LearnWeb"
+		},
+		{
+			"path": "../../CSCI6300/TermProject"
+		},
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "CSCI5410",
+		"liveServer.settings.port": 5501
+	}
+}

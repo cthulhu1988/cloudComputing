@@ -1,0 +1,23 @@
+html, body {
+}
+
+#command{
+  font-size: 1.5em;
+}
+
+#formbox {
+  font-size: 1.4em;
+  float: left;
+  padding: 20px;
+  border: 1px solid #999999;
+}
+#databox {
+  font-size: 3em;
+  float: left;
+  width: 700px;
+  height: 700px;
+  overflow: auto;
+  margin-left: 20px;
+  padding: 20px;
+  border: 1px solid #999999;
+}

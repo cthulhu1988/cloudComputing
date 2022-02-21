@@ -1,0 +1,11 @@
+demo01 uses:
+    1 (server.php)
+        (**** run on a server)
+        I copied ALL of ../content/ws  to  vwg@vws:rbutler/ws then,
+        logged in there as vwg@vws I ran:
+            php server.php
+        Note:  This should run on any server that has php installed.
+    2 (demo01.html)
+    3 (websocket.css)
+    4 (websocket01.js)
+demo02 is like demo01, but uses websocket02.js instead.

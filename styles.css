@@ -1,6 +1,17 @@
 html, body {
 }
 
+#pass{
+  font-size: 1.5em;
+}
+#userbtn, #button {
+  font-size: 1.5em;
+
+}
+
+#user{
+  font-size: 1.5em;
+}
 #command{
   font-size: 1.5em;
 }

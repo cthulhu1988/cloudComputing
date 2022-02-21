@@ -25,28 +25,28 @@ for (let i = 0; i < leng - 1; i++) {
 
 console.log(users)
 ///////////////////// Inter server communication //////////////////////////////
+
+// Listen for connection from server 1
 wsNode.on('listening', function () {
     console.log("listening on port 8001");
 });
 
-// WEBSERVER
+// 
 wsNode.on('connection', (wsNode) => {
-    console.log("connection to port 8000")
+    console.log("connection to port 8001")
     /// INDIVIDUAL CONNECTIONS // 
     wsNode.on('message', function (charMsg) {
         var charString = String(charMsg);
         charString = charString.toLowerCase();
         console.log(charString);
         wsNode.send("Got your message")
-
     });
 });
 
-
+// Server 1 is on port 8000
 const serverNode = new WebSocket('ws://139.177.205.73:8000');
 
 serverNode.on('open', function open() {
-
 //	serverNode.send('something');
 });
 
@@ -54,17 +54,15 @@ serverNode.on('message', function message(data) {
   console.log('received: %s', data);
 });
 
-
-
-
-
 ////////////////////END INTER SERVER COMMUNICATION //////////////////////////////////////////////
 
+// Listen for connections from clients //
 wss.on('listening', function () {
-    console.log("listening on port 5994");
+    console.log("listening on port 5995");
     //console.log("curr clients: ",wss.clients);
 });
-// WEBSERVER
+
+// CLIENT WEBSERVER
 wss.on('connection', (ws) => {
     const id = uuidv4();
     const loggedIn = false;
@@ -146,7 +144,8 @@ wss.on('connection', (ws) => {
                 ws.send("Delete from file");
 
             } else if (charString == 'exit') {
-		serverNode.send('Connection Closed from Client, need to sync');
+		        // IF client exits we need to call a sync function. 
+                serverNode.send('Connection Closed from Client, need to sync');
                 ws.send("Closing");
                 ws.close()
             } else {

@@ -1,9 +1,8 @@
 const WebSocketServer = require('ws').Server;
 const WebSocket = require('ws').WebSocket;
-var serverNode; 
-
 var fs = require('fs');
 
+var serverNode; 
 const clients = new Map();
 // Client Websocket
 const wsNode = new WebSocketServer({ port: 8000 });
@@ -24,6 +23,8 @@ for (let i = 0; i < leng - 1; i++) {
 
 //console.log(users)
 ///////////////////// Inter server communication //////////////////////////////
+
+//Listen for server 2 
 wsNode.on('listening', function () {
     console.log("listening on port 8000");
 });
@@ -46,14 +47,12 @@ wsNode.on('connection', (wsNode) => {
     });
 });
 
-
-
 ///////////////////////////////////////////////////////////////////////////
 wss.on('listening', function () {
     console.log("listening on port 5995");
-    //console.log("curr clients: ",wss.clients);
 });
-// WEBSERVER
+
+// Client WEBSERVER
 wss.on('connection', (ws) => {
     const id = uuidv4();
     const loggedIn = false;
@@ -135,8 +134,8 @@ wss.on('connection', (ws) => {
                 ws.send("Delete from file");
 
             } else if (charString == 'exit') {
-                serverNode.send("Server 1 is closing a connection")
-		ws.send("Closing");
+            serverNode.send("Server 1 is closing a connection")
+		    ws.send("Closing");
                
 		ws.close()
             } else {

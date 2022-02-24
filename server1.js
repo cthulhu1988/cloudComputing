@@ -112,13 +112,13 @@ wss.on('connection', (ws) => {
             /////////////////////// NOW LOGGED IN ///////////////////////////////     
         } else {
             if (charString == "read") {
-            var arr = readFile(users);
+                var arr = readFile(users);
                 console.log(arr)
-            for(let i=arr.length; i >= 0; i--){
-                ws.send(arr[i])
-                console.log(arr[i])
-            }
-                
+                for (let i = arr.length; i >= 0; i--) {
+                    ws.send(arr[i])
+                    console.log(arr[i])
+                }
+
 
             } else if (charString == "write") {
                 ws.send("Write to file");
@@ -164,27 +164,27 @@ function funcaddUser(metadata, charString, ws) {
     }
 }
 
-function readFile(users){
-var array = fs.readFileSync(userFile).toString().split("\n");
-var myString = ""
-var leng = array.length;
-for (let i = 0; i < leng - 1; i++) {
-    if (i % 2 == 1) {
-        myString += array[i-1]
-        myString += " "
-        myString += array[i]
-        myString += ","
+function readFile(users) {
+    var array = fs.readFileSync(userFile).toString().split("\n");
+    var myString = ""
+    var leng = array.length;
+    for (let i = 0; i < leng - 1; i++) {
+        if (i % 2 == 1) {
+            myString += array[i - 1]
+            myString += " "
+            myString += array[i]
+            myString += ","
 
-        users.set(array[i - 1], array[i])
+            users.set(array[i - 1], array[i])
+        }
     }
-}
     console.log(myString)
     var ar = myString.split(",")
     return ar
 }
 
 function logMapElements(value, key, map) {
-  console.log(`m[${key}] = ${value}`);
+    console.log(`m[${key}] = ${value}`);
 }
 
 function uuidv4() {

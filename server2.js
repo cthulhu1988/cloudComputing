@@ -6,8 +6,9 @@ var fs = require('fs');
 const users = new Map();
 const clients = new Map();
 var authClients = []
-
+// Socket to talk to other sever
 const wsNode = new WebSocketServer({ port: 8001 });
+// socket for client
 const wss = new WebSocketServer({ port: 5995 });
 
 

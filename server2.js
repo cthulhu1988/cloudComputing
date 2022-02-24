@@ -73,6 +73,7 @@ wss.on('connection', (ws) => {
     /// INDIVIDUAL CONNECTIONS // 
     ws.on('message', function (charMsg) {
         const metadata = clients.get(ws);
+        console.log(metadata)
         var charString = String(charMsg)
         charString = charString.toLowerCase()
         var newUser = charString.substring(0, 1);

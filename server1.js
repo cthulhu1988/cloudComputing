@@ -1,3 +1,6 @@
+#!/usr/bin/node
+
+
 const WebSocketServer = require('ws').Server;
 const WebSocket = require('ws').WebSocket;
 var fs = require('fs');

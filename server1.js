@@ -1,5 +1,6 @@
 #!/usr/bin/node
-
+const JSONdb = require('simple-json-db');
+const db = new JSONdb('/root/cloudComputing/database.json');
 
 const WebSocketServer = require('ws').Server;
 const WebSocket = require('ws').WebSocket;
@@ -21,13 +22,16 @@ var leng = array.length;
 console.log(leng)
 for (let i = 0; i < leng - 1; i++) {
     if (i % 2 == 1) {
+	db.set(array[i-1], array[i])    
         users.set(array[i - 1], array[i])
     }
 }
 
+db.sync();
+console.log("#################")
+console.log(JSON.stringify(db.JSON()))
+console.log("#################")
 
-
-//console.log(users)
 ///////////////////// Inter server communication //////////////////////////////
 
 //Listen for server 2 
@@ -115,12 +119,9 @@ wss.on('connection', (ws) => {
             /////////////////////// NOW LOGGED IN ///////////////////////////////     
         } else {
             if (charString == "read") {
-                var arr = readFile(users);
-                console.log(arr)
-                for (let i = arr.length; i >= 0; i--) {
-                    ws.send(arr[i])
-                    console.log(arr[i])
-                }
+		ws.send(JSON.stringify(db.JSON()))
+                
+	    
 
 
             } else if (charString == "write") {

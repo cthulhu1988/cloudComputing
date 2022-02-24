@@ -87,23 +87,7 @@ wss.on('connection', (ws) => {
             //// ADD NEW USER ////
             if (addUser == true) {
                 addUser = false
-                addUser(charString, ws)
-                // var myArray;
-                // var p, u;
-                // var subcharString = charString.substring(1)
-                // console.log(subcharString)
-                // myArray = subcharString.split(',')
-                // u = myArray[0]; p = myArray[1];
-                // console.log(`u: ${u} p ${p}`)
-                // metadata.user = u;
-                // metadata.password = p
-                // metadata.loggedIn = false
-                // if (users.has(u)) {
-                //     ws.send(`User: ${u} already added`);
-                // } else {
-                //     users.set(u, p)
-                //     ws.send(`Added User: ${u}`);
-                // }
+                funcaddUser(metadata, charString, ws)
             }
             /// USER IN SYSTEM, ADD PASSWORD
             else if (users.has(charString) && waitingForPass == false) {
@@ -131,7 +115,11 @@ wss.on('connection', (ws) => {
 
             /////////////////////// NOW LOGGED IN ///////////////////////////////     
         } else {
-            if (charString == "read") {
+            if (addUser == true) {
+                addUser = false
+                funcaddUser(metadata, charString, ws)
+            }
+            else if (charString == "read") {
                 ws.send("Read file");
 
             } else if (charString == "write") {
@@ -159,7 +147,7 @@ wss.on('connection', (ws) => {
 });
 
 
-function addUser(charString, ws) {
+function funcaddUser(metadata, charString, ws) {
     var myArray;
     var p, u;
     var subcharString = charString.substring(1)

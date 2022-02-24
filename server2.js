@@ -116,11 +116,8 @@ wss.on('connection', (ws) => {
 
             /////////////////////// NOW LOGGED IN ///////////////////////////////     
         } else {
-            if (addUser == true) {
-                addUser = false
-                funcaddUser(metadata, charString, ws)
-            }
-            else if (charString == "read") {
+
+            if (charString == "read") {
                 ws.send("Read file");
 
             } else if (charString == "write") {
@@ -165,9 +162,9 @@ function funcaddUser(metadata, charString, ws) {
         users.set(u, p)
         ws.send(`Added User: ${u}`);
     }
-
-
 }
+
+
 
 function uuidv4() {
     return 'yxxx-xxx'.replace(/[xy]/g, function (c) {

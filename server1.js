@@ -1,8 +1,13 @@
+#!/usr/bin/node
+const JSONdb = require('simple-json-db');
+const db = new JSONdb('/root/cloudComputing/database.json');
+
 const WebSocketServer = require('ws').Server;
 const WebSocket = require('ws').WebSocket;
 var fs = require('fs');
+var userFile = 'accounts1.txt'
 
-var serverNode; 
+var serverNode;
 const clients = new Map();
 // Client Websocket
 const wsNode = new WebSocketServer({ port: 8000 });
@@ -12,16 +17,21 @@ const wss = new WebSocketServer({ port: 5995 });
 var authClients = []
 const users = new Map();
 /// Read in users from text file. 
-var array = fs.readFileSync('accounts1.txt').toString().split("\n");
+var array = fs.readFileSync(userFile).toString().split("\n");
 var leng = array.length;
 console.log(leng)
 for (let i = 0; i < leng - 1; i++) {
     if (i % 2 == 1) {
+	db.set(array[i-1], array[i])    
         users.set(array[i - 1], array[i])
     }
 }
 
-//console.log(users)
+db.sync();
+console.log("#################")
+console.log(JSON.stringify(db.JSON()))
+console.log("#################")
+
 ///////////////////// Inter server communication //////////////////////////////
 
 //Listen for server 2 
@@ -33,16 +43,16 @@ wsNode.on('listening', function () {
 wsNode.on('connection', (wsNode) => {
     serverNode = new WebSocket('ws://45.33.96.41:8001');
     serverNode.on('open', function open() {
-     console.log("listening on 8001 for other server")
-     });
+        console.log("listening on 8001 for other server")
+    });
 
     console.log("connection to port 8000")
     /// INDIVIDUAL CONNECTIONS // 
     wsNode.on('message', function (charMsg) {
         var charString = String(charMsg);
         charString = charString.toLowerCase();
-	console.log(charString);
-	wsNode.send("Got your message")
+        console.log(charString);
+        wsNode.send("Got your message")
 
     });
 });
@@ -80,22 +90,7 @@ wss.on('connection', (ws) => {
             //// ADD NEW USER ////
             if (addUser == true) {
                 addUser = false
-                var myArray;
-                var p, u;
-                var subcharString = charString.substring(1)
-                console.log(subcharString)
-                myArray = subcharString.split(',')
-                u = myArray[0]; p = myArray[1];
-                console.log(`u: ${u} p ${p}`)
-                metadata.user = u;
-                metadata.password = p
-                metadata.loggedIn = false
-                if (users.has(u)) {
-                    ws.send(`User: ${u} already added`);
-                } else {
-                    users.set(u, p)
-                    ws.send(`Added User: ${u}`);
-                }
+                funcaddUser(metadata, charString, ws)
             }
             /// USER IN SYSTEM, ADD PASSWORD
             else if (users.has(charString) && waitingForPass == false) {
@@ -111,11 +106,16 @@ wss.on('connection', (ws) => {
                     metadata.loggedIn = true
                     authClients.push(metadata.id)
                     ws.send("logged");
+                    waitingForPass = false
                 } else {
-                    ws.send("Closing");
-                    ws.close()
+                    if(tries > 0){
+                        ws.send(`${tries} tries to login are left...`)
+                        tries -= 1;
+                    } else {
+                        ws.send("Closing");
+                        ws.close()
+                    }
                 }
-                waitingForPass = false
 
             } else {
                 ws.send("LOGIN")
@@ -124,7 +124,10 @@ wss.on('connection', (ws) => {
             /////////////////////// NOW LOGGED IN ///////////////////////////////     
         } else {
             if (charString == "read") {
-                ws.send("Read file");
+		ws.send(JSON.stringify(db.JSON()))
+                
+	    
+
 
             } else if (charString == "write") {
                 ws.send("Write to file");
@@ -134,10 +137,10 @@ wss.on('connection', (ws) => {
                 ws.send("Delete from file");
 
             } else if (charString == 'exit') {
-            serverNode.send("Server 1 is closing a connection")
-		    ws.send("Closing");
-               
-		ws.close()
+                serverNode.send("Server 1 is closing a connection")
+                ws.send("Closing");
+
+                ws.close()
             } else {
                 ws.send("3. DELETE");
                 ws.send("2. WRITE");
@@ -151,8 +154,47 @@ wss.on('connection', (ws) => {
 });
 
 
+function funcaddUser(metadata, charString, ws) {
+    var myArray;
+    var p, u;
+    var subcharString = charString.substring(1)
+    console.log(subcharString)
+    myArray = subcharString.split(',')
+    u = myArray[0]; p = myArray[1];
+    console.log(`u: ${u} p ${p}`)
+    metadata.user = u;
+    metadata.password = p
+    metadata.loggedIn = false
+    if (users.has(u)) {
+        ws.send(`User: ${u} already added`);
+    } else {
+        users.set(u, p)
+        ws.send(`Added User: ${u}`);
+    }
+}
 
+function readFile(users) {
+    var array = fs.readFileSync(userFile).toString().split("\n");
+    var myString = ""
+    var leng = array.length;
+    for (let i = 0; i < leng - 1; i++) {
+        if (i % 2 == 1) {
+            myString += array[i - 1]
+            myString += " "
+            myString += array[i]
+            myString += ","
 
+            users.set(array[i - 1], array[i])
+        }
+    }
+    console.log(myString)
+    var ar = myString.split(",")
+    return ar
+}
+
+function logMapElements(value, key, map) {
+    console.log(`m[${key}] = ${value}`);
+}
 
 function uuidv4() {
     return 'yxxx-xxx'.replace(/[xy]/g, function (c) {

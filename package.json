@@ -9,6 +9,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "simple-json-db": "^1.2.3",
     "ws": "^8.5.0"
   }
 }

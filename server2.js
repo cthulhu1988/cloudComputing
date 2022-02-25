@@ -1,29 +1,31 @@
+#!/usr/bin/node
+const JSONdb = require('simple-json-db');
+const db = new JSONdb('/root/cloudComputing/database.json');
+
 const WebSocketServer = require('ws').Server;
 const WebSocket = require('ws').WebSocket;
 
 var fs = require('fs');
 
-var socketNode;
+const users = new Map();
 const clients = new Map();
-
+var authClients = []
+// Socket to talk to other sever
 const wsNode = new WebSocketServer({ port: 8001 });
+// socket for client
 const wss = new WebSocketServer({ port: 5995 });
 
-
-
-var authClients = []
-const users = new Map();
 
 var array = fs.readFileSync('accounts2.txt').toString().split("\n");
 var leng = array.length;
 console.log(leng)
 for (let i = 0; i < leng - 1; i++) {
     if (i % 2 == 1) {
-        users.set(array[i - 1], array[i])
+        db.set(array[i-1], array[i]);
+        users.set(array[i - 1], array[i]);
     }
 }
-
-console.log(users)
+db.sync();
 ///////////////////// Inter server communication //////////////////////////////
 
 // Listen for connection from server 1
@@ -47,11 +49,11 @@ wsNode.on('connection', (wsNode) => {
 const serverNode = new WebSocket('ws://139.177.205.73:8000');
 
 serverNode.on('open', function open() {
-//	serverNode.send('something');
+    //	serverNode.send('something');
 });
 
 serverNode.on('message', function message(data) {
-  console.log('received: %s', data);
+    console.log('received: %s', data);
 });
 
 ////////////////////END INTER SERVER COMMUNICATION //////////////////////////////////////////////
@@ -75,7 +77,8 @@ wss.on('connection', (ws) => {
 
     /// INDIVIDUAL CONNECTIONS // 
     ws.on('message', function (charMsg) {
-	    const metadata = clients.get(ws);
+        const metadata = clients.get(ws);
+        console.log(metadata)
         var charString = String(charMsg)
         charString = charString.toLowerCase()
         var newUser = charString.substring(0, 1);
@@ -90,22 +93,7 @@ wss.on('connection', (ws) => {
             //// ADD NEW USER ////
             if (addUser == true) {
                 addUser = false
-                var myArray;
-                var p, u;
-                var subcharString = charString.substring(1)
-                console.log(subcharString)
-                myArray = subcharString.split(',')
-                u = myArray[0]; p = myArray[1];
-                console.log(`u: ${u} p ${p}`)
-                metadata.user = u;
-                metadata.password = p
-                metadata.loggedIn = false
-                if (users.has(u)) {
-                    ws.send(`User: ${u} already added`);
-                } else {
-                    users.set(u, p)
-                    ws.send(`Added User: ${u}`);
-                }
+                funcaddUser(metadata, charString, ws)
             }
             /// USER IN SYSTEM, ADD PASSWORD
             else if (users.has(charString) && waitingForPass == false) {
@@ -131,8 +119,9 @@ wss.on('connection', (ws) => {
                 ws.send("LOGIN")
             }
 
-    /////////////////////// NOW LOGGED IN ///////////////////////////////     
+            /////////////////////// NOW LOGGED IN ///////////////////////////////     
         } else {
+
             if (charString == "read") {
                 ws.send("Read file");
 
@@ -144,7 +133,7 @@ wss.on('connection', (ws) => {
                 ws.send("Delete from file");
 
             } else if (charString == 'exit') {
-		        // IF client exits we need to call a sync function. 
+                // IF client exits we need to call a sync function. 
                 serverNode.send('Connection Closed from Client, need to sync');
                 ws.send("Closing");
                 ws.close()
@@ -159,6 +148,28 @@ wss.on('connection', (ws) => {
         }
     });
 });
+
+
+function funcaddUser(metadata, charString, ws) {
+    var myArray;
+    var p, u;
+    var subcharString = charString.substring(1)
+    console.log(subcharString)
+    myArray = subcharString.split(',')
+    u = myArray[0]; p = myArray[1];
+    console.log(`u: ${u} p ${p}`)
+    metadata.user = u;
+    metadata.password = p
+    metadata.loggedIn = false
+    if (users.has(u)) {
+        ws.send(`User: ${u} already added`);
+    } else {
+        users.set(u, p)
+        ws.send(`Added User: ${u}`);
+    }
+}
+
+
 
 function uuidv4() {
     return 'yxxx-xxx'.replace(/[xy]/g, function (c) {

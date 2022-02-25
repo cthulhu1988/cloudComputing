@@ -106,11 +106,16 @@ wss.on('connection', (ws) => {
                     metadata.loggedIn = true
                     authClients.push(metadata.id)
                     ws.send("logged");
+                    waitingForPass = false
                 } else {
-                    ws.send("Closing");
-                    ws.close()
+                    if(tries > 0){
+                        ws.send(`${tries} tries to login are left...`)
+                        tries -= 1;
+                    } else {
+                        ws.send("Closing");
+                        ws.close()
+                    }
                 }
-                waitingForPass = false
 
             } else {
                 ws.send("LOGIN")

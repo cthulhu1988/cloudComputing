@@ -9,8 +9,8 @@ function initiate() {
   // socket = new WebSocket("ws://YOUR_IP_ADDRESS:12345/ws/demo.php");
   // socket = new WebSocket("ws://www.cs.mtsu.edu:5995");
   //socket = new WebSocket("ws://localhost:5995");
-  //socket = new WebSocket("ws://139.177.205.73:5995");
-  socket = new WebSocket("ws://45.33.96.41:5995");
+  socket = new WebSocket("ws://139.177.205.73:5995");
+ // socket = new WebSocket("ws://45.33.96.41:5995");
   socket.addEventListener("message", received);
 }
 function received(event) {

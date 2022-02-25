@@ -8,7 +8,10 @@ html, body {
   font-size: 1.5em;
 
 }
+#addUser{
+padding-top: 350px;
 
+}
 #user{
   font-size: 1.5em;
 }
@@ -25,7 +28,7 @@ html, body {
 #databox {
   font-size: 3em;
   float: left;
-  width: 700px;
+  width: 1200px;
   height: 700px;
   overflow: auto;
   margin-left: 20px;

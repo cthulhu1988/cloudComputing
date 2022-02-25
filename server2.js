@@ -1,4 +1,7 @@
 #!/usr/bin/node
+const JSONdb = require('simple-json-db');
+const db = new JSONdb('/root/cloudComputing/database.json');
+
 const WebSocketServer = require('ws').Server;
 const WebSocket = require('ws').WebSocket;
 
@@ -18,11 +21,11 @@ var leng = array.length;
 console.log(leng)
 for (let i = 0; i < leng - 1; i++) {
     if (i % 2 == 1) {
-        users.set(array[i - 1], array[i])
+        db.set(array[i-1], array[i]);
+        users.set(array[i - 1], array[i]);
     }
 }
-
-console.log(users)
+db.sync();
 ///////////////////// Inter server communication //////////////////////////////
 
 // Listen for connection from server 1

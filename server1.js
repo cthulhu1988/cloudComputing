@@ -14,14 +14,14 @@ var authClients = [];
 
 const wsNode = new WebSocketServer({ port: 8000 });
 const wss = new WebSocketServer({ port: 5995 });
-
+var strArray = []
 /// Read in users from text file.
 var array = fs.readFileSync(userFile).toString().split("\n");
 var leng = array.length;
 console.log(leng);
 for (let i = 0; i < leng - 1; i++) {
   if (i % 2 == 1) {
-    db.set(array[i - 1], "null");
+    db.set(array[i - 1], []);
     users.set(array[i - 1], array[i]);
   }
 }
@@ -112,11 +112,20 @@ wss.on("connection", (ws) => {
       } else {
         ws.send("LOGIN");
       }
-
+/////////////////////////////////////////////////////////////////////////////
       /////////////////////// NOW LOGGED IN ///////////////////////////////
+///////////////////////////////////////////////////////////////////
     } else {
       if(writing == true){
-        console.log(metadata.user)
+          var key = metadata.user
+        if(db.has(key)){
+            ws.send(JSON.stringify(db.JSON()));
+            var value = db.get(key)
+            value.push(charString)
+            db.set(key, value)
+            ws.send(`writing data to user: ${key}`)
+        }
+          writing = false
       } else if (charString == "read") {
         ws.send("Read file:");
         ws.send(JSON.stringify(db.JSON()));

@@ -73,6 +73,7 @@ wss.on("connection", (ws) => {
   var waitingForPass = false;
   var tries = 3;
   clients.set(ws, metadata);
+  var writing = false
 
   /// INDIVIDUAL CONNECTIONS //
   ws.on("message", function (charMsg) {
@@ -122,16 +123,42 @@ wss.on("connection", (ws) => {
 
       /////////////////////// NOW LOGGED IN ///////////////////////////////
     } else {
-      if (charString == "read") {
-        ws.send("Read file:");
-        ws.send(JSON.stringify(db.JSON()));
+      var key = metadata.user
+      if (writing == true) {
+        var key = metadata.user
+        if (db.has(key)) {
+          //ws.send(JSON.stringify(db.JSON()));
+          var value = db.get(key)
+          value.push(charString)
+          db.set(key, value)
+          ws.send(`writing data to user: ${key}`)
+        }
+        writing = false
+
+      } else if (charString == "read") {
+        ws.send(`Data for user: ${key}`)
+        if (db.has(key)) {
+          var value = db.get(key)
+          ws.send(`${value}`)
+        } else {
+          ws.send("No Data Set yet")
+
+        }
+
       } else if (charString == "write") {
-        ws.send("Write to file");
+        ws.send("Send data to write to file:");
+        writing = true
       } else if (charString == "delete") {
-        ws.send("Delete from file");
+        if (db.has(key)) {
+          db.set(key, [])
+          ws.send(`Data deleted for ${key}`)
+        } else {
+          ws.send("User to delete")
+        }
+
       } else if (charString == "exit") {
         // IF client exits we need to call a sync function.
-        serverNode.send("Connection Closed from Client, need to sync");
+        serverNode.send(JSON.stringify(db.JSON()))
         ws.send("Closing");
         ws.close();
       } else {

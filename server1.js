@@ -112,31 +112,46 @@ wss.on("connection", (ws) => {
       } else {
         ws.send("LOGIN");
       }
-/////////////////////////////////////////////////////////////////////////////
+      /////////////////////////////////////////////////////////////////////////////
       /////////////////////// NOW LOGGED IN ///////////////////////////////
-///////////////////////////////////////////////////////////////////
+      ///////////////////////////////////////////////////////////////////
     } else {
-      if(writing == true){
-          var key = metadata.user
-        if(db.has(key)){
-            ws.send(JSON.stringify(db.JSON()));
-            var value = db.get(key)
-            value.push(charString)
-            db.set(key, value)
-            ws.send(`writing data to user: ${key}`)
+      var key = metadata.user
+      if (writing == true) {
+        if (db.has(key)) {
+          //ws.send(JSON.stringify(db.JSON()));
+          var value = db.get(key)
+          value.push(charString)
+          db.set(key, value)
+          ws.send(`writing data to user: ${key}`)
         }
-          writing = false
+        writing = false
+
       } else if (charString == "read") {
-        ws.send("Read file:");
-        ws.send(JSON.stringify(db.JSON()));
+        ws.send(`Data for user: ${key}`)
+        if (db.has(key)) {
+          var value = db.get(key)
+          ws.send(`${value}`)
+        } else {
+          ws.send("No Data Set yet")
+        }
+
       } else if (charString == "write") {
         ws.send("Send data to write to file:");
         writing = true
 
       } else if (charString == "delete") {
+        if (db.has(key)) {
+
+          db.set(key, [])
+          ws.send(`Data deleted for ${key}`)
+        } else {
+          ws.send("User to delete")
+        }
+
         ws.send("Delete from file");
       } else if (charString == "exit") {
-        serverNode.send("Server 1 is closing a connection");
+        serverNode.send(JSON.stringify(db.JSON()))
         ws.send("Closing");
         ws.close();
       } else {

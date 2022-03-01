@@ -1,6 +1,7 @@
 #!/usr/bin/node
 const JSONdb = require("simple-json-db");
 const db = new JSONdb("/root/cloudComputing/database.json");
+//const db = new JSONdb("/root/cloudComputing/temp.json");
 
 const WebSocketServer = require("ws").Server;
 const WebSocket = require("ws").WebSocket;
@@ -20,7 +21,7 @@ var leng = array.length;
 console.log(leng);
 for (let i = 0; i < leng - 1; i++) {
   if (i % 2 == 1) {
-    db.set(array[i - 1], "null");
+    db.set(array[i - 1], []);
     users.set(array[i - 1], array[i]);
   }
 }
@@ -33,24 +34,32 @@ wsNode.on("listening", function () {
 });
 
 //
-wsNode.on("connection", (wsNode) => {
+////////// Handle incoming messages ///////////////
+wsNode.on("connection", (node) => {
   console.log("connection to port 8001");
   /// INDIVIDUAL CONNECTIONS //
-  wsNode.on("message", function (charMsg) {
+  node.on("message", function (charMsg) {
     var charString = String(charMsg);
     charString = charString.toLowerCase();
-    console.log(charString);
-    wsNode.send("Got your message");
+    console.log("message from server 1" + charString);
+    var obj = JSON.parse(charMsg)
+      for(const key in obj){
+        if(db.has(key)){
+            var ar = obj[key]
+            console.log(ar.length)
+            console.log(`key ${key} and val ${obj[key]}`)
+        }  
+      }
+
   });
 });
 
+//////////////// NO CODE NEEDED HERE
 // Server 1 is on port 8000
 const serverNode = new WebSocket("ws://139.177.205.73:8000");
-
 serverNode.on("open", function open() {
   //	serverNode.send('something');
 });
-
 serverNode.on("message", function message(data) {
   console.log("received: %s", data);
 });
@@ -153,7 +162,7 @@ wss.on("connection", (ws) => {
           db.set(key, [])
           ws.send(`Data deleted for ${key}`)
         } else {
-          ws.send("User to delete")
+          ws.send("User to delete not Present")
         }
 
       } else if (charString == "exit") {

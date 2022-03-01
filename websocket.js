@@ -7,8 +7,8 @@ function initiate() {
   addUser.addEventListener("click", sendUser);
 
   //socket = new WebSocket("ws://localhost:5995");
-  socket = new WebSocket("ws://139.177.205.73:5995");
- // socket = new WebSocket("ws://45.33.96.41:5995");
+ // socket = new WebSocket("ws://139.177.205.73:5995");
+  socket = new WebSocket("ws://45.33.96.41:5995");
   
   socket.addEventListener("message", received);
 }

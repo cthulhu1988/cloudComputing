@@ -20,7 +20,7 @@ var leng = array.length;
 console.log(leng);
 for (let i = 0; i < leng - 1; i++) {
   if (i % 2 == 1) {
-    db.set(array[i - 1], array[i]);
+    db.set(array[i - 1], "null");
     users.set(array[i - 1], array[i]);
   }
 }

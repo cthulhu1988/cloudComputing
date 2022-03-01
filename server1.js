@@ -21,7 +21,7 @@ var leng = array.length;
 console.log(leng);
 for (let i = 0; i < leng - 1; i++) {
   if (i % 2 == 1) {
-    db.set(array[i - 1], array[i]);
+    db.set(array[i - 1], "null");
     users.set(array[i - 1], array[i]);
   }
 }
@@ -66,6 +66,7 @@ wss.on("connection", (ws) => {
   var waitingForPass = false;
   var tries = 3;
   clients.set(ws, metadata);
+  var writing = false
 
   /// INDIVIDUAL CONNECTIONS //
   ws.on("message", function (charMsg) {
@@ -114,11 +115,15 @@ wss.on("connection", (ws) => {
 
       /////////////////////// NOW LOGGED IN ///////////////////////////////
     } else {
-      if (charString == "read") {
+      if(writing == true){
+        console.log(metadata.user)
+      } else if (charString == "read") {
         ws.send("Read file:");
         ws.send(JSON.stringify(db.JSON()));
       } else if (charString == "write") {
-        ws.send("Write to file");
+        ws.send("Send data to write to file:");
+        writing = true
+
       } else if (charString == "delete") {
         ws.send("Delete from file");
       } else if (charString == "exit") {

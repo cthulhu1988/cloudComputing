@@ -45,8 +45,22 @@ wsNode.on("connection", (wsNode) => {
   wsNode.on("message", function (charMsg) {
     var charString = String(charMsg);
     charString = charString.toLowerCase();
-    console.log(charString);
+    console.log("From server 2 " + charString);
     wsNode.send("Got your message");
+    var obj = JSON.parse(charMsg)
+    for(const key in obj){
+      if(db.has(key)){ 
+      var valArray = obj[key]
+          var dbArray = db.get(key)
+      for(let i = 0; i < valArray.length; i++){
+        console.log(`the item ${valArray[i]}`)
+        dbArray.push(valArray[i])
+      }
+      }  
+    }  
+
+    console.log(JSON.stringify(db.JSON()))
+
   });
 });
 ///////////////////// END Inter server communication //////////////////////////////
@@ -142,14 +156,12 @@ wss.on("connection", (ws) => {
 
       } else if (charString == "delete") {
         if (db.has(key)) {
-
           db.set(key, [])
           ws.send(`Data deleted for ${key}`)
         } else {
-          ws.send("User to delete")
+          ws.send("User to delete Not Present")
         }
 
-        ws.send("Delete from file");
       } else if (charString == "exit") {
         serverNode.send(JSON.stringify(db.JSON()))
         ws.send("Closing");

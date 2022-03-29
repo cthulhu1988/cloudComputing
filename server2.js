@@ -147,6 +147,7 @@ wss.on("connection", (ws) => {
       if (addUser == true) {
         addUser = false;
         funcaddUser(metadata, charString, ws);
+        console.log("Adding new user")
       }
       var key = metadata.user
       if (writing == true) {

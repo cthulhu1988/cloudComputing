@@ -1,4 +1,5 @@
 #!/usr/bin/node
+
 const JSONdb = require("simple-json-db");
 const db = new JSONdb("/root/cloudComputing/database.json");
 
@@ -12,8 +13,12 @@ const clients = new Map();
 const users = new Map();
 var authClients = [];
 
-const wsNode = new WebSocketServer({ port: 8000 });
-const wss = new WebSocketServer({ port: 5995 });
+const wsNode = new WebSocketServer({
+  port: 8000
+});
+const wss = new WebSocketServer({
+  port: 5995
+});
 var strArray = []
 /// Read in users from text file.
 var array = fs.readFileSync(userFile).toString().split("\n");
@@ -48,16 +53,16 @@ wsNode.on("connection", (wsNode) => {
     console.log("From server 2 " + charString);
     wsNode.send("Got your message");
     var obj = JSON.parse(charMsg)
-    for(const key in obj){
-      if(db.has(key)){ 
-      var valArray = obj[key]
-          var dbArray = db.get(key)
-      for(let i = 0; i < valArray.length; i++){
-        console.log(`the item ${valArray[i]}`)
-        dbArray.push(valArray[i])
+    for (const key in obj) {
+      if (db.has(key)) {
+        var valArray = obj[key]
+        var dbArray = db.get(key)
+        for (let i = 0; i < valArray.length; i++) {
+          console.log(`the item ${valArray[i]}`)
+          //dbArray.push(valArray[i])
+        }
       }
-      }  
-    }  
+    }
 
     console.log(JSON.stringify(db.JSON()))
 
@@ -76,7 +81,12 @@ wss.on("connection", (ws) => {
   const loggedIn = false;
   var user = "";
   var password = "";
-  const metadata = { id, loggedIn, user, password };
+  const metadata = {
+    id,
+    loggedIn,
+    user,
+    password
+  };
   var waitingForPass = false;
   var tries = 3;
   clients.set(ws, metadata);
@@ -193,7 +203,7 @@ function funcaddUser(metadata, charString, ws) {
   metadata.loggedIn = false;
   metadata.id = uuidv4();
   // add user to database
-  db.set(u,[]);
+  db.set(u, []);
   if (users.has(u)) {
     ws.send(`User: ${u} already added`);
   } else {
@@ -232,4 +242,3 @@ function uuidv4() {
     return v.toString(16);
   });
 }
-

@@ -48,14 +48,17 @@ wsNode.on("connection", (node) => {
     charString = charString.toLowerCase();
     console.log("message from server 1" + charString);
     var obj = JSON.parse(charMsg)
+    // for each key in received message, add to it. 
     for (const key in obj) {
       if (db.has(key)) {
         var ar = obj[key]
-        console.log(ar.length)
-        console.log(`key ${key} and val ${obj[key]}`)
+        var dbArray = db.get(key)
+        for (let i = 0; i < ar.length; i++) {
+          dbArray.push(ar[i])
+          db.set(key, ar)
+        }
       }
     }
-
   });
 });
 
@@ -156,11 +159,11 @@ wss.on("connection", (ws) => {
           //ws.send(JSON.stringify(db.JSON()));
           var value = db.get(key)
           value.push(charString)
-          db.set(key,value)
+          db.set(key, value)
           ws.send(`writing data to user: ${key}`)
         }
 
-        
+
         writing = false
 
       } else if (charString == "read") {
@@ -216,7 +219,7 @@ function funcaddUser(metadata, charString, ws) {
   metadata.loggedIn = false;
   metadata.id = uuidv4();
   // add user to database
-  db.set(u,[]);
+  db.set(u, []);
   if (users.has(u)) {
     ws.send(`User: ${u} already added`);
   } else {

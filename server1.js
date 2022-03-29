@@ -47,6 +47,7 @@ wsNode.on("connection", (wsNode) => {
 
   console.log("connection to port 8000");
   /// INDIVIDUAL CONNECTIONS //
+////////// Handle incoming messages ///////////////
   wsNode.on("message", function (charMsg) {
     var charString = String(charMsg);
     charString = charString.toLowerCase();
@@ -68,7 +69,7 @@ wsNode.on("connection", (wsNode) => {
       }
     }
 
-    console.log(JSON.stringify(db.JSON()))
+    //console.log(JSON.stringify(db.JSON()))
 
   });
 });

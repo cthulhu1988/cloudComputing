@@ -156,7 +156,7 @@ wss.on("connection", (ws) => {
           //ws.send(JSON.stringify(db.JSON()));
           var value = db.get(key)
           value.push(charString)
-          db.set(key, [])
+          db.set(key,value)
           ws.send(`writing data to user: ${key}`)
         }
 
@@ -216,7 +216,7 @@ function funcaddUser(metadata, charString, ws) {
   metadata.loggedIn = false;
   metadata.id = uuidv4();
   // add user to database
-  db.set(u,p);
+  db.set(u,[]);
   if (users.has(u)) {
     ws.send(`User: ${u} already added`);
   } else {

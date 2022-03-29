@@ -193,7 +193,7 @@ function funcaddUser(metadata, charString, ws) {
   metadata.loggedIn = false;
   metadata.id = uuidv4();
   // add user to database
-  db.set(u,p);
+  db.set(u,[]);
   if (users.has(u)) {
     ws.send(`User: ${u} already added`);
   } else {

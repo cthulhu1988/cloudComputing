@@ -132,6 +132,10 @@ wss.on("connection", (ws) => {
 
       /////////////////////// NOW LOGGED IN ///////////////////////////////
     } else {
+      if (addUser == true) {
+        addUser = false;
+        funcaddUser(metadata, charString, ws);
+      }
       var key = metadata.user
       if (writing == true) {
         var key = metadata.user

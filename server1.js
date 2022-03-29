@@ -62,7 +62,7 @@ wsNode.on("connection", (wsNode) => {
         for (let i = 0; i < valArray.length; i++) {
           console.log(`the item ${valArray[i]}`)
           console.log(`the dbArray =  ${dbArray}`)
-          //dbArray.push(valArray[i])
+          dbArray.push(valArray[i])
         }
       }
     }

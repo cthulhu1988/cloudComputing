@@ -183,12 +183,17 @@ function funcaddUser(metadata, charString, ws) {
   var subcharString = charString.substring(1);
   console.log(subcharString);
   myArray = subcharString.split(",");
+  // new user
   u = myArray[0];
+  // new password
   p = myArray[1];
   console.log(`u: ${u} p ${p}`);
   metadata.user = u;
   metadata.password = p;
   metadata.loggedIn = false;
+  metadata.id = uuidv4();
+  // add user to database
+  db.set(u,p);
   if (users.has(u)) {
     ws.send(`User: ${u} already added`);
   } else {

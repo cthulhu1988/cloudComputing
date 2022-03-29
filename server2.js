@@ -159,6 +159,8 @@ wss.on("connection", (ws) => {
           db.set(key, value)
           ws.send(`writing data to user: ${key}`)
         }
+
+        
         writing = false
 
       } else if (charString == "read") {
@@ -213,6 +215,8 @@ function funcaddUser(metadata, charString, ws) {
   metadata.password = p;
   metadata.loggedIn = false;
   metadata.id = uuidv4();
+  // add user to database
+  db.set(u,p);
   if (users.has(u)) {
     ws.send(`User: ${u} already added`);
   } else {

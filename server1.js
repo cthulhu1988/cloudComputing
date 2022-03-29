@@ -63,6 +63,7 @@ wsNode.on("connection", (wsNode) => {
           console.log(`the item ${valArray[i]}`)
           console.log(`the dbArray =  ${dbArray}`)
           dbArray.push(valArray[i])
+          db.set(key, dbArray)
         }
       }
     }

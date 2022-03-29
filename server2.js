@@ -1,4 +1,5 @@
 #!/usr/bin/node
+
 const JSONdb = require("simple-json-db");
 const db = new JSONdb("/root/cloudComputing/database.json");
 //const db = new JSONdb("/root/cloudComputing/temp.json");
@@ -12,9 +13,13 @@ const users = new Map();
 const clients = new Map();
 var authClients = [];
 // Socket to talk to other sever
-const wsNode = new WebSocketServer({ port: 8001 });
+const wsNode = new WebSocketServer({
+  port: 8001
+});
 // socket for client
-const wss = new WebSocketServer({ port: 5995 });
+const wss = new WebSocketServer({
+  port: 5995
+});
 
 var array = fs.readFileSync(userFile).toString().split("\n");
 var leng = array.length;
@@ -43,13 +48,13 @@ wsNode.on("connection", (node) => {
     charString = charString.toLowerCase();
     console.log("message from server 1" + charString);
     var obj = JSON.parse(charMsg)
-      for(const key in obj){
-        if(db.has(key)){
-            var ar = obj[key]
-            console.log(ar.length)
-            console.log(`key ${key} and val ${obj[key]}`)
-        }  
+    for (const key in obj) {
+      if (db.has(key)) {
+        var ar = obj[key]
+        console.log(ar.length)
+        console.log(`key ${key} and val ${obj[key]}`)
       }
+    }
 
   });
 });
@@ -78,7 +83,12 @@ wss.on("connection", (ws) => {
   const loggedIn = false;
   var user = "";
   var password = "";
-  const metadata = { id, loggedIn, user, password };
+  const metadata = {
+    id,
+    loggedIn,
+    user,
+    password
+  };
   var waitingForPass = false;
   var tries = 3;
   clients.set(ws, metadata);
@@ -92,14 +102,15 @@ wss.on("connection", (ws) => {
     charString = charString.toLowerCase();
     var newUser = charString.substring(0, 1);
     var addUser = false;
+    /// detect add user option. 
     if (newUser == ",") {
       addUser = true;
     }
     console.log("add " + addUser);
     console.log("char string " + charString);
-    /// LOGIN THRESHHOLD //
+    /// LOGIN THRESHHOLD - USE IF NO CURRENT USER LOGGED IN //
     if (metadata.loggedIn == false) {
-      //// ADD NEW USER ////
+      //// ADD NEW USER if no user logged in////
       if (addUser == true) {
         addUser = false;
         funcaddUser(metadata, charString, ws);
@@ -129,8 +140,9 @@ wss.on("connection", (ws) => {
       } else {
         ws.send("LOGIN");
       }
-
+      /////////////////////////////////////////////////////////////////////
       /////////////////////// NOW LOGGED IN ///////////////////////////////
+      ///////////////////////////////////////////////////////////////////////
     } else {
       if (addUser == true) {
         addUser = false;
@@ -191,12 +203,15 @@ function funcaddUser(metadata, charString, ws) {
   var subcharString = charString.substring(1);
   console.log(subcharString);
   myArray = subcharString.split(",");
+  // new user
   u = myArray[0];
+  // new password
   p = myArray[1];
   console.log(`u: ${u} p ${p}`);
   metadata.user = u;
   metadata.password = p;
   metadata.loggedIn = false;
+  metadata.id = uuidv4();
   if (users.has(u)) {
     ws.send(`User: ${u} already added`);
   } else {

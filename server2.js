@@ -156,7 +156,7 @@ wss.on("connection", (ws) => {
           //ws.send(JSON.stringify(db.JSON()));
           var value = db.get(key)
           value.push(charString)
-          db.set(key, value)
+          db.set(key, [])
           ws.send(`writing data to user: ${key}`)
         }
 

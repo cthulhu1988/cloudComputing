@@ -54,11 +54,14 @@ wsNode.on("connection", (wsNode) => {
     wsNode.send("Got your message");
     var obj = JSON.parse(charMsg)
     for (const key in obj) {
+      console.log("key: " + key)
       if (db.has(key)) {
         var valArray = obj[key]
+        console.log("valarray " + valArray)
         var dbArray = db.get(key)
         for (let i = 0; i < valArray.length; i++) {
           console.log(`the item ${valArray[i]}`)
+          console.log(`the dbArray =  ${dbArray}`)
           //dbArray.push(valArray[i])
         }
       }

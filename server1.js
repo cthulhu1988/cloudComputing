@@ -54,7 +54,7 @@ wsNode.on("connection", (wsNode) => {
     console.log("From server 2 " + charString);
     wsNode.send("Got your message");
     // Check for new user //
-    var hash = charString.substring(0,1);
+    var hash = charString.substring(0, 1);
     if (hash == "#") {
       console.log("new user")
       var trimOffHash = charString.substring(1);
@@ -62,12 +62,20 @@ wsNode.on("connection", (wsNode) => {
       fs.appendFile(userFile, myArray[0], (err) => {
         if (err) {
           console.log(err);
-        }});
+        }
+      });
 
+      fs.appendFile(userFile, "\n", (err) => {
+        if (err) {
+          console.log(err);
+        }
+      });
+      
       fs.appendFile(userFile, myArray[1], (err) => {
         if (err) {
           console.log(err);
-        }});
+        }
+      });
 
     } else {
       console.log("hash " + hash)

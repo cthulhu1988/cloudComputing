@@ -53,7 +53,7 @@ wsNode.on("connection", (wsNode) => {
     charString = charString.toLowerCase();
     console.log("From server 2 " + charString);
     wsNode.send("Got your message");
-    if (charStrin.substring[0] == '#') {
+    if (charString.substring[0,1] == '#') {
       console.log("new user")
     } else {
 

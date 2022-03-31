@@ -59,19 +59,13 @@ wsNode.on("connection", (wsNode) => {
       console.log("new user")
       var trimOffHash = charString.substring(1);
       var myArray = trimOffHash.split(",");
-      fs.appendFile(userFile, myArray[0], (err) => {
+      fs.appendFile(userFile, myArray[0] + "\n", (err) => {
         if (err) {
           console.log(err);
         }
       });
 
-      fs.appendFile(userFile, "\n", (err) => {
-        if (err) {
-          console.log(err);
-        }
-      });
-
-      fs.appendFile(userFile, myArray[1], (err) => {
+      fs.appendFile(userFile, myArray[1] + "\n", (err) => {
         if (err) {
           console.log(err);
         }

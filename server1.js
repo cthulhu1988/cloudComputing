@@ -53,25 +53,31 @@ wsNode.on("connection", (wsNode) => {
     charString = charString.toLowerCase();
     console.log("From server 2 " + charString);
     wsNode.send("Got your message");
-    var obj = JSON.parse(charMsg)
-    // For Each Key in message, add to data. 
-    for (const key in obj) {
-      console.log("const key: " + key)
-      if (db.has(key)) {
-        // this is the items in that array
-        var valArray = obj[key]
-        console.log("obj[key] " + valArray)
-        var dbArray = db.get(key)
-        console.log("db array from db.get(key) " + dbArray)
-        for (let i = 0; i < valArray.length; i++) {
-          console.log(`the item ${valArray[i]}`)
-          dbArray.push(valArray[i])
-        }
-        db.set(key, dbArray)
-        console.log(`the dbArray =  ${dbArray}`)
-      }
-    }
+    if (charStrin.substring[0] == '#') {
+      console.log("new user")
+    } else {
 
+      var obj = JSON.parse(charMsg)
+      // For Each Key in message, add to data. 
+      for (const key in obj) {
+        console.log("const key: " + key)
+        if (db.has(key)) {
+          // this is the items in that array
+          var valArray = obj[key]
+          console.log("obj[key] " + valArray)
+          // get array and push new values 
+          var dbArray = db.get(key)
+          console.log("db array from db.get(key) " + dbArray)
+          for (let i = 0; i < valArray.length; i++) {
+            console.log(`the item ${valArray[i]}`)
+            dbArray.push(valArray[i])
+          }
+          db.set(key, dbArray)
+          console.log(`the dbArray =  ${dbArray}`)
+        }
+      }
+
+    }
     //console.log(JSON.stringify(db.JSON()))
 
   });
@@ -217,6 +223,7 @@ function funcaddUser(metadata, charString, ws) {
   } else {
     users.set(u, p);
     ws.send(`Added User: ${u}`);
+    serverNode.send(`#${u},${p}`)
   }
 }
 

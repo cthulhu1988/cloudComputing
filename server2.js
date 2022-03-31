@@ -52,13 +52,17 @@ wsNode.on("connection", (node) => {
     for (const key in obj) {
       if (db.has(key)) {
         var ar = obj[key]
+        // get array and push new values 
         var dbArray = db.get(key)
         for (let i = 0; i < ar.length; i++) {
           dbArray.push(ar[i])
-          db.set(key, ar)
         }
+        db.set(key, ar)
+        console.log(`the Array  ar=  ${ar}`)
       }
     }
+
+
   });
 });
 
@@ -162,8 +166,6 @@ wss.on("connection", (ws) => {
           db.set(key, value)
           ws.send(`writing data to user: ${key}`)
         }
-
-
         writing = false
 
       } else if (charString == "read") {
@@ -187,7 +189,7 @@ wss.on("connection", (ws) => {
           ws.send("User to delete not Present")
         }
 
-/// Exit, Need to sync data ////
+        /// Exit, Need to sync data ////
       } else if (charString == "exit") {
         // IF client exits we need to call a sync function.
         serverNode.send(JSON.stringify(db.JSON()))
@@ -226,6 +228,7 @@ function funcaddUser(metadata, charString, ws) {
   } else {
     users.set(u, p);
     ws.send(`Added User: ${u}`);
+    serverNode.send(`#${u},${p}`)
   }
 }
 

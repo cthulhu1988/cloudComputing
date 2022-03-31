@@ -53,10 +53,11 @@ wsNode.on("connection", (wsNode) => {
     charString = charString.toLowerCase();
     console.log("From server 2 " + charString);
     wsNode.send("Got your message");
-    if (charString.substring[0,1] == '#') {
+    var hash = charString.substring(0,1);
+    if (hash == "#") {
       console.log("new user")
     } else {
-
+      console.log("hash " + hash)
       var obj = JSON.parse(charMsg)
       // For Each Key in message, add to data. 
       for (const key in obj) {

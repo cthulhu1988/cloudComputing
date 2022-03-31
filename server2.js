@@ -187,6 +187,7 @@ wss.on("connection", (ws) => {
           ws.send("User to delete not Present")
         }
 
+/// Exit, Need to sync data ////
       } else if (charString == "exit") {
         // IF client exits we need to call a sync function.
         serverNode.send(JSON.stringify(db.JSON()))

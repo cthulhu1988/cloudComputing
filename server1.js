@@ -54,11 +54,12 @@ wsNode.on("connection", (wsNode) => {
     console.log("From server 2 " + charString);
     wsNode.send("Got your message");
     var obj = JSON.parse(charMsg)
+    // For Each Key in message, add to data. 
     for (const key in obj) {
-      console.log("key: " + key)
+      console.log("const key: " + key)
       if (db.has(key)) {
         var valArray = obj[key]
-        console.log("valarray " + valArray)
+        console.log("obj[key] " + valArray)
         var dbArray = db.get(key)
         for (let i = 0; i < valArray.length; i++) {
           console.log(`the item ${valArray[i]}`)
@@ -176,7 +177,7 @@ wss.on("connection", (ws) => {
         } else {
           ws.send("User to delete Not Present")
         }
-
+/// Exit, Need to sync data ////
       } else if (charString == "exit") {
         serverNode.send(JSON.stringify(db.JSON()))
         ws.send("Closing");

@@ -47,7 +47,7 @@ wsNode.on("connection", (wsNode) => {
 
   console.log("connection to port 8000");
   /// INDIVIDUAL CONNECTIONS //
-////////// Handle incoming messages ///////////////
+  ////////// Handle incoming messages ///////////////
   wsNode.on("message", function (charMsg) {
     var charString = String(charMsg);
     charString = charString.toLowerCase();
@@ -65,10 +65,10 @@ wsNode.on("connection", (wsNode) => {
         console.log("db array from db.get(key) " + dbArray)
         for (let i = 0; i < valArray.length; i++) {
           console.log(`the item ${valArray[i]}`)
-          console.log(`the dbArray =  ${dbArray}`)
           dbArray.push(valArray[i])
-          db.set(key, dbArray)
         }
+        db.set(key, dbArray)
+        console.log(`the dbArray =  ${dbArray}`)
       }
     }
 
@@ -179,7 +179,7 @@ wss.on("connection", (ws) => {
         } else {
           ws.send("User to delete Not Present")
         }
-/// Exit, Need to sync data ////
+        /// Exit, Need to sync data ////
       } else if (charString == "exit") {
         serverNode.send(JSON.stringify(db.JSON()))
         ws.send("Closing");

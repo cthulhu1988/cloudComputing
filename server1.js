@@ -58,9 +58,9 @@ wsNode.on("connection", (wsNode) => {
     if (hash == "#") {
       console.log("new user")
       var trimOffHash = charString.substring(1);
-      myArray = trimOffHash.split("#");
-      fs.appendFile(myArray[0])
-      fs.appendFile(myArray[1])
+      var myArray = trimOffHash.split("#");
+      fs.appendFile(userFile,myArray[0])
+      fs.appendFile(userFile,myArray[1])
     } else {
       console.log("hash " + hash)
       var obj = JSON.parse(charMsg)

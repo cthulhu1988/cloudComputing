@@ -58,9 +58,11 @@ wsNode.on("connection", (wsNode) => {
     for (const key in obj) {
       console.log("const key: " + key)
       if (db.has(key)) {
+        // this is the items in that array
         var valArray = obj[key]
         console.log("obj[key] " + valArray)
         var dbArray = db.get(key)
+        console.log("db array from db.get(key) " + dbArray)
         for (let i = 0; i < valArray.length; i++) {
           console.log(`the item ${valArray[i]}`)
           console.log(`the dbArray =  ${dbArray}`)

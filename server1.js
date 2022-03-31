@@ -70,7 +70,7 @@ wsNode.on("connection", (wsNode) => {
           console.log(err);
         }
       });
-      
+
       fs.appendFile(userFile, myArray[1], (err) => {
         if (err) {
           console.log(err);

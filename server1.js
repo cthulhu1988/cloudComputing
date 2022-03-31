@@ -2,24 +2,24 @@
 
 const JSONdb = require("simple-json-db");
 const db = new JSONdb("/root/cloudComputing/database.json");
-
 const WebSocketServer = require("ws").Server;
 const WebSocket = require("ws").WebSocket;
 var fs = require("fs");
-var userFile = "accounts1.txt";
 
+var userFile = "accounts1.txt";
 var serverNode;
 const clients = new Map();
 const users = new Map();
 var authClients = [];
-
+// Socket to talk to other server
 const wsNode = new WebSocketServer({
   port: 8000
 });
+// Socket for client program
 const wss = new WebSocketServer({
   port: 5995
 });
-var strArray = []
+
 /// Read in users from text file.
 var array = fs.readFileSync(userFile).toString().split("\n");
 var leng = array.length;
@@ -30,6 +30,7 @@ for (let i = 0; i < leng - 1; i++) {
     users.set(array[i - 1], array[i]);
   }
 }
+/// Sync data base with new users ////
 db.sync();
 
 ///////////////////// Inter server communication //////////////////////////////
@@ -53,6 +54,7 @@ wsNode.on("connection", (wsNode) => {
     charString = charString.toLowerCase();
     console.log("From server 2 " + charString);
     wsNode.send("Got your message");
+
     // Check for new user //
     var hash = charString.substring(0, 1);
     if (hash == "#") {
@@ -72,7 +74,6 @@ wsNode.on("connection", (wsNode) => {
       });
 
     } else {
-      console.log("hash " + hash)
       var obj = JSON.parse(charMsg)
       // For Each Key in message, add to data. 
       for (const key in obj) {
@@ -92,10 +93,7 @@ wsNode.on("connection", (wsNode) => {
           console.log(`the dbArray =  ${dbArray}`)
         }
       }
-
     }
-    //console.log(JSON.stringify(db.JSON()))
-
   });
 });
 ///////////////////// END Inter server communication //////////////////////////////
@@ -105,7 +103,7 @@ wss.on("listening", function () {
   console.log("listening on port 5995");
 });
 
-// Client WEBSERVER
+// Client WEBSERVER ////////////////
 wss.on("connection", (ws) => {
   const id = uuidv4();
   const loggedIn = false;
@@ -129,11 +127,11 @@ wss.on("connection", (ws) => {
     charString = charString.toLowerCase();
     var newUser = charString.substring(0, 1);
     var addUser = false;
+    /// detect add user option to database. 
     if (newUser == ",") {
       addUser = true;
     }
-    console.log("add " + addUser);
-    console.log("char string " + charString);
+
     /// LOGIN THRESHHOLD //
     if (metadata.loggedIn == false) {
       //// ADD NEW USER ////
@@ -179,8 +177,10 @@ wss.on("connection", (ws) => {
           db.set(key, value)
           ws.send(`writing data to user: ${key}`)
         }
+
         writing = false
 
+        /////////READ DATA FROM USER /////////
       } else if (charString == "read") {
         ws.send(`Data for user: ${key}`)
         if (db.has(key)) {
@@ -190,6 +190,7 @@ wss.on("connection", (ws) => {
           ws.send("No Data Set yet")
         }
 
+        /////////WRITE DATA TO USER /////////
       } else if (charString == "write") {
         ws.send("Send data to write to file:");
         writing = true
@@ -221,13 +222,11 @@ function funcaddUser(metadata, charString, ws) {
   var myArray;
   var p, u;
   var subcharString = charString.substring(1);
-  console.log(subcharString);
   myArray = subcharString.split(",");
   // new user
   u = myArray[0];
   // new password
   p = myArray[1];
-  console.log(`u: ${u} p ${p}`);
   metadata.user = u;
   metadata.password = p;
   metadata.loggedIn = false;
@@ -260,10 +259,6 @@ function readFile(users) {
   console.log(myString);
   var ar = myString.split(",");
   return ar;
-}
-
-function logMapElements(value, key, map) {
-  console.log(`m[${key}] = ${value}`);
 }
 
 function uuidv4() {

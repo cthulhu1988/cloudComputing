@@ -53,9 +53,14 @@ wsNode.on("connection", (wsNode) => {
     charString = charString.toLowerCase();
     console.log("From server 2 " + charString);
     wsNode.send("Got your message");
+    // Check for new user //
     var hash = charString.substring(0,1);
     if (hash == "#") {
       console.log("new user")
+      var trimOffHash = charString.substring(1);
+      myArray = trimOffHash.split("#");
+      fs.appendFile(myArray[0])
+      fs.appendFile(myArray[1])
     } else {
       console.log("hash " + hash)
       var obj = JSON.parse(charMsg)

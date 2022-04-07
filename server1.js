@@ -110,11 +110,13 @@ wsNode.on("connection", (wsNode) => {
           for (let i = 0; i < valArray.length; i++) {
             console.log(`the item ${valArray[i]}`)
             dbArray.push(valArray[i])
+            console.log("the current array " + dbArray)
           }
           var set = new Set();
           dbArray.map(item => set.add(item));
-          dbArray = Array.from(dbArray);
-          db.set(key, dbArray)
+          cleanArr = Array.from(dbArray);
+          db.set(key, cleanArr)
+          console.log("clean " + cleanArr)
           console.log(`the dbArray =  ${dbArray}`)
         }
       }

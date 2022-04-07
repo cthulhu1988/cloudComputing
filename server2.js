@@ -47,10 +47,11 @@ wsNode.on("connection", (node) => {
     charString = charString.toLowerCase();
     console.log("message from server 1" + charString);
 
-    // Check for new user //
+    // Check for new user in message//
     var hash = charString.substring(0, 1);
     if (hash == "#") {
       console.log("new user")
+      ////////// ADD NEW USER TO TEXT FILE //////////
       var trimOffHash = charString.substring(1);
       var myArray = trimOffHash.split(",");
       fs.appendFile(userFile, myArray[0] + "\n", (err) => {
@@ -64,6 +65,7 @@ wsNode.on("connection", (node) => {
           console.log(err);
         }
       });
+      /////////// IF NOT A NEW USER MESSAGE /////////
     } else {
       var obj = JSON.parse(charMsg)
       // for each key in received message, add to it. 
@@ -114,7 +116,7 @@ wss.on("connection", (ws) => {
   var tries = 3;
   clients.set(ws, metadata);
   var writing = false
-
+  var deleteInProgress = false
   /// INDIVIDUAL CONNECTIONS //
   ws.on("message", function (charMsg) {
     const metadata = clients.get(ws);
@@ -170,6 +172,7 @@ wss.on("connection", (ws) => {
         console.log("Adding new user")
       }
       var key = metadata.user
+      /////////////////////////////////////////////////
       if (writing == true) {
         var key = metadata.user
         if (db.has(key)) {
@@ -197,13 +200,25 @@ wss.on("connection", (ws) => {
       } else if (charString == "write") {
         ws.send("Send data to write to file:");
         writing = true
+
+        /////////// DELETE DATA //////////////
       } else if (charString == "delete") {
+
+        ws.send(`Delete What Number:`)
         if (db.has(key)) {
-          db.set(key, [])
-          ws.send(`Data deleted for ${key}`)
-        } else {
-          ws.send("User to delete not Present")
+          var value = db.get(key)
+          for (let i = 1; i <= value.length; i++) {
+            ws.send(`${i} ${value}`)
+          }
         }
+
+        deleteInProgress = true
+        // if (db.has(key)) {
+        //   db.set(key, [])
+        //   ws.send(`Data deleted for ${key}`)
+        // } else {
+        //   ws.send("User to delete not Present")
+        // }
 
         /// Exit, Need to sync data ////
       } else if (charString == "exit") {
@@ -242,6 +257,7 @@ function funcaddUser(metadata, charString, ws) {
   } else {
     users.set(u, p);
     ws.send(`Added User: ${u}`);
+    // Send notice of new user to other server
     serverNode.send(`#${u},${p}`)
   }
 }

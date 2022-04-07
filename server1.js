@@ -55,10 +55,11 @@ wsNode.on("connection", (wsNode) => {
     console.log("From server 2 " + charString);
     wsNode.send("Got your message");
 
-    // Check for new user //
+    // Check for new user in message//
     var hash = charString.substring(0, 1);
     if (hash == "#") {
       console.log("new user")
+      ////////// ADD NEW USER TO TEXT FILE //////////
       var trimOffHash = charString.substring(1);
       var myArray = trimOffHash.split(",");
       fs.appendFile(userFile, myArray[0] + "\n", (err) => {
@@ -73,6 +74,7 @@ wsNode.on("connection", (wsNode) => {
         }
       });
 
+      /////////// IF NOT A NEW USER MESSAGE /////////
     } else {
       var obj = JSON.parse(charMsg)
       // For Each Key in message, add to data. 
@@ -168,7 +170,13 @@ wss.on("connection", (ws) => {
       /////////////////////// NOW LOGGED IN ///////////////////////////////
       ///////////////////////////////////////////////////////////////////
     } else {
+      if (addUser == true) {
+        addUser = false;
+        funcaddUser(metadata, charString, ws);
+        console.log("Adding new user")
+      }
       var key = metadata.user
+      //////////////////////////////////
       if (writing == true) {
         if (db.has(key)) {
           //ws.send(JSON.stringify(db.JSON()));
@@ -195,6 +203,7 @@ wss.on("connection", (ws) => {
         ws.send("Send data to write to file:");
         writing = true
 
+        /////////// DELETE DATA //////////////
       } else if (charString == "delete") {
         if (db.has(key)) {
           db.set(key, [])
@@ -238,6 +247,7 @@ function funcaddUser(metadata, charString, ws) {
   } else {
     users.set(u, p);
     ws.send(`Added User: ${u}`);
+    // Send message to other server about new user. 
     serverNode.send(`#${u},${p}`)
   }
 }

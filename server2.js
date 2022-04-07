@@ -181,12 +181,13 @@ wss.on("connection", (ws) => {
         var key = metadata.user
         var value = db.get(key)
         console.log(`KEY ${key} and value ${value}`)
-        var arr = []
-        arr = arr.filter(function (item) {
+        var it = value[index]
+        console.log(`it -> ${it}`)
+        value = value.filter(function (item) {
           console.log(item)
-          return item !== value[index]
+          return item !== it
         })
-        console.log(arr)
+        console.log("value new "+ value)
       }
       if (writing == true) {
         var key = metadata.user

@@ -96,28 +96,29 @@ wsNode.on("connection", (wsNode) => {
 
       /////////// IF NOT A NEW USER MESSAGE /////////
     } else {
-      var obj = JSON.parse(charMsg)
+
+      var JSONObjArray = JSON.parse(charMsg)
       // For Each Key in message, add to data. 
-      for (const key in obj) {
+      for (const key in JSONObjArray) {
         console.log("const key: " + key)
         if (db.has(key)) {
           // this is the items in that array
-          var valArray = obj[key]
-          console.log("obj[key] " + valArray)
+          var jsonKeyArr = JSONObjArray[key]
+          console.log("json array of key " + jsonKeyArr)
           // get array and push new values 
-          var dbArray = db.get(key)
-          console.log("db array from db.get(key) " + dbArray)
-          for (let i = 0; i < valArray.length; i++) {
-            console.log(`the item ${valArray[i]}`)
-            dbArray.push(valArray[i])
-            console.log("the current array " + dbArray)
+          var thisDBArray = db.get(key)
+          console.log("db array from server 1 db.get(key) " + thisDBArray)
+          for (let i = 0; i < jsonKeyArr.length; i++) {
+            console.log(`the item ${jsonKeyArr[i]}`)
+            thisDBArray.push(jsonKeyArr[i])
           }
+          console.log("the current array " + thisDBArray)
           var set = new Set();
-          dbArray.map(item => set.add(item));
-          cleanArr = Array.from(dbArray);
+          thisDBArray.forEach(item => set.add(item))
+          cleanArr = Array.from(set);
           db.set(key, cleanArr)
           console.log("clean " + cleanArr)
-          console.log(`the dbArray =  ${dbArray}`)
+          console.log(`the dbArray =  ${thisDBArray}`)
         }
       }
     }

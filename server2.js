@@ -88,11 +88,11 @@ wsNode.on("connection", (node) => {
       });
       /////////// IF NOT A NEW USER MESSAGE /////////
     } else {
-      var obj = JSON.parse(charMsg)
+      var JSONObjArray = JSON.parse(charMsg)
       // for each key in received message, add to it. 
-      for (const key in obj) {
+      for (const key in JSONObjArray) {
         if (db.has(key)) {
-          var ar = obj[key]
+          var ar = JSONObjArray[key]
           // get array and push new values 
           var dbArray = db.get(key)
           for (let i = 0; i < ar.length; i++) {
@@ -100,7 +100,7 @@ wsNode.on("connection", (node) => {
           }
           var set = new Set();
           ar.map(item => set.add(item));
-          ar = Array.from(ar);
+          ar = Array.from(set);
           db.set(key, ar)
           console.log(`the Array ar=  ${ar}`)
         }

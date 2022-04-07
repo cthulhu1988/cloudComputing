@@ -225,14 +225,18 @@ wss.on("connection", (ws) => {
         /////////READ DATA FROM USER /////////
       } else if (charString == "read") {
         ws.send(`Data for user: ${key}`)
+
         if (db.has(key)) {
           var value = db.get(key)
-          ws.send(`${value}`)
-        } else {
-          ws.send("No Data Set yet")
-
+          if (value.length < 1) {
+            ws.send("No Data Set yet")
+          } else {
+            ws.send(`${value}`)
+          }
         }
 
+
+        
         /////////WRITE DATA TO USER /////////
       } else if (charString == "write") {
         ws.send("Send data to write to file:");

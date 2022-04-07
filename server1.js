@@ -1,4 +1,5 @@
 #!/usr/bin/node
+const server2 = "ws://45.33.96.41:8001";
 
 const JSONdb = require("simple-json-db");
 const db = new JSONdb("/root/cloudComputing/database.json");
@@ -41,7 +42,7 @@ wsNode.on("listening", function () {
 
 // WEBSERVER
 wsNode.on("connection", (wsNode) => {
-  serverNode = new WebSocket("ws://45.33.96.41:8001");
+  serverNode = new WebSocket(server2);
   serverNode.on("open", function open() {
     console.log("listening on 8001 for other server");
   });

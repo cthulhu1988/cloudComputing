@@ -1,4 +1,5 @@
 #!/usr/bin/node
+const server1 = "ws://139.177.205.73:8000";
 
 const JSONdb = require("simple-json-db");
 const db = new JSONdb("/root/cloudComputing/database.json");
@@ -85,7 +86,7 @@ wsNode.on("connection", (node) => {
   });
 });
 
-const serverNode = new WebSocket("ws://139.177.205.73:8000");
+const serverNode = new WebSocket(server1);
 serverNode.on("open", function open() {
   //	serverNode.send('something');
 });

@@ -131,7 +131,7 @@ wss.on("connection", (ws) => {
     password
   };
   var waitingForPass = false;
-  var tries = 3;
+  var tries = 2;
   clients.set(ws, metadata);
   var writing = false
   var deleteInProgress = false
@@ -178,7 +178,7 @@ wss.on("connection", (ws) => {
           }
         }
       } else {
-        ws.send("LOGIN");
+        ws.send("User Not found, please Add New User");
       }
       /////////////////////////////////////////////////////////////////////
       /////////////////////// NOW LOGGED IN ///////////////////////////////
@@ -224,19 +224,19 @@ wss.on("connection", (ws) => {
 
         /////////READ DATA FROM USER /////////
       } else if (charString == "read") {
-        ws.send(`Data for user: ${key}`)
 
         if (db.has(key)) {
           var value = db.get(key)
           if (value.length < 1) {
-            ws.send("No Data Set yet")
+            ws.send("No Data Set yet for " + key)
           } else {
             ws.send(`${value}`)
           }
         }
+        ws.send(`Data for user: ${key}`)
 
 
-        
+
         /////////WRITE DATA TO USER /////////
       } else if (charString == "write") {
         ws.send("Send data to write to file:");

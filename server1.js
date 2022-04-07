@@ -77,9 +77,7 @@ wsNode.on("connection", (wsNode) => {
       })
       console.log("value new " + value)
       db.set(key, value);
-    }
-
-    else if(leadingChar == "#") {
+    } else if (leadingChar == "#") {
       console.log("new user")
       ////////// ADD NEW USER TO TEXT FILE //////////
       var trimOffHash = charString.substring(1);
@@ -113,6 +111,9 @@ wsNode.on("connection", (wsNode) => {
             console.log(`the item ${valArray[i]}`)
             dbArray.push(valArray[i])
           }
+          var set = new Set();
+          dbArray.map(item => set.add(item));
+          dbArray = Array.from(dbArray);
           db.set(key, dbArray)
           console.log(`the dbArray =  ${dbArray}`)
         }

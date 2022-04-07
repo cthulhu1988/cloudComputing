@@ -70,9 +70,7 @@ wsNode.on("connection", (node) => {
       })
       console.log("value new " + value)
       db.set(key, value);
-    }
-
-    else if (leadingChar == "#") {
+    } else if (leadingChar == "#") {
       console.log("new user")
       ////////// ADD NEW USER TO TEXT FILE //////////
       var trimOffHash = charString.substring(1);
@@ -100,8 +98,11 @@ wsNode.on("connection", (node) => {
           for (let i = 0; i < ar.length; i++) {
             dbArray.push(ar[i])
           }
+          var set = new Set();
+          ar.map(item => set.add(item));
+          ar = Array.from(ar);
           db.set(key, ar)
-          console.log(`the Array  ar=  ${ar}`)
+          console.log(`the Array ar=  ${ar}`)
         }
       }
     }

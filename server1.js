@@ -222,6 +222,7 @@ wss.on("connection", (ws) => {
       } else if (charString == "read") {
 
         if (db.has(key)) {
+        ws.send(`Data for user: ${key}`)
           var value = db.get(key)
           if (value.length < 1) {
             ws.send("No Data Set yet for " + key)
@@ -229,7 +230,6 @@ wss.on("connection", (ws) => {
             ws.send(`${value}`)
           }
         }
-        ws.send(`Data for user: ${key}`)
 
         /////////WRITE DATA TO USER /////////
       } else if (charString == "write") {
@@ -240,11 +240,11 @@ wss.on("connection", (ws) => {
       } else if (charString == "delete") {
 
         if (db.has(key)) {
+          ws.send(`Delete What Number:`)
           var value = db.get(key)
           for (let i = 1; i <= value.length; i++) {
             ws.send(`${i} ${value[i-1]}`)
           }
-          ws.send(`Delete What Number:`)
         }
 
         deleteInProgress = true
@@ -255,11 +255,11 @@ wss.on("connection", (ws) => {
         ws.send("Closing");
         ws.close();
       } else {
-        ws.send("3. DELETE");
-        ws.send("2. WRITE");
-        ws.send("1. READ");
-        ws.send("Menu:\n");
         ws.send(`Your User ID is -->${metadata.id}\n`);
+        ws.send("Menu:\n");
+        ws.send("1. READ");
+        ws.send("2. WRITE");
+        ws.send("3. DELETE");
       }
     }
   });

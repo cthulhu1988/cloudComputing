@@ -177,8 +177,17 @@ wss.on("connection", (ws) => {
       if (deleteInProgress == true) {
         ws.send(`deleting ${charString}`)
         deleteInProgress = false
+        var index = parseInt(charString) - 1
+        var key = metadata.user
+        if (db.has(key)) {
+          var value = db.get(key)
+          var arr = []
+          arr = arr.filter(function (item) {
+            return item !== value[index]
+          })
+          console.log(arr)
+        }
       }
-
       if (writing == true) {
         var key = metadata.user
         if (db.has(key)) {

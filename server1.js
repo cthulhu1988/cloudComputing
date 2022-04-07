@@ -25,7 +25,6 @@ const wss = new WebSocketServer({
 /// Read in users from text file.
 var array = fs.readFileSync(userFile).toString().split("\n");
 var leng = array.length;
-console.log(leng);
 for (let i = 0; i < leng - 1; i++) {
   if (i % 2 == 1) {
     if (!db.has(array[i - 1])) {
@@ -36,7 +35,6 @@ for (let i = 0; i < leng - 1; i++) {
 }
 /// Sync data base with new users ////
 db.sync();
-
 ///////////////////// Inter server communication //////////////////////////////
 //Listen for server 2
 wsNode.on("listening", function () {
@@ -52,6 +50,7 @@ wsNode.on("connection", (wsNode) => {
 
   console.log("connection to port 8000");
   /// INDIVIDUAL CONNECTIONS //
+
   ////////// Handle incoming messages ///////////////
   wsNode.on("message", function (charMsg) {
     var charString = String(charMsg);
@@ -59,9 +58,28 @@ wsNode.on("connection", (wsNode) => {
     console.log("From server 2 " + charString);
     wsNode.send("Got your message");
 
-    // Check for new user in message//
-    var hash = charString.substring(0, 1);
-    if (hash == "#") {
+    // Check for new user,other stuff in server message//
+    var leadingChar = charString.substring(0, 1);
+    ////////////////////////////////////////////////
+
+    if (leadingChar == "-") {
+      var trimOffHash = charString.substring(1);
+      console.log("removing item")
+      removeItemArr = trimOffHash.split(",");
+      var key = removeItemArr[0]
+      var value = db.get(key)
+      console.log(`KEY ${key} and value ${value}`)
+      var it = removeItemArr[1]
+      console.log(`it -> ${it}`)
+      value = value.filter(function (item) {
+        console.log(item)
+        return item !== it
+      })
+      console.log("value new " + value)
+      db.set(key, value);
+    }
+
+    if (leadingChar == "#") {
       console.log("new user")
       ////////// ADD NEW USER TO TEXT FILE //////////
       var trimOffHash = charString.substring(1);
@@ -103,7 +121,7 @@ wsNode.on("connection", (wsNode) => {
   });
 });
 ///////////////////// END Inter server communication //////////////////////////////
-
+///////////////////////////////////////////////////////////////////////////
 //////////////////// CLIENT WEBSERVER ///////////////////////////////////////////////////////
 wss.on("listening", function () {
   console.log("listening on port 5995");

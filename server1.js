@@ -79,7 +79,7 @@ wsNode.on("connection", (wsNode) => {
       db.set(key, value);
     }
 
-    if (leadingChar == "#") {
+    else if(leadingChar == "#") {
       console.log("new user")
       ////////// ADD NEW USER TO TEXT FILE //////////
       var trimOffHash = charString.substring(1);

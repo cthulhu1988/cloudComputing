@@ -179,14 +179,14 @@ wss.on("connection", (ws) => {
         deleteInProgress = false
         var index = parseInt(charString) - 1
         var key = metadata.user
-        if (db.has(key)) {
-          var value = db.get(key)
-          var arr = []
-          arr = arr.filter(function (item) {
-            return item !== value[index]
-          })
-          console.log(arr)
-        }
+        var value = db.get(key)
+        console.log(`KEY ${key} and value ${value}`)
+        var arr = []
+        arr = arr.filter(function (item) {
+          console.log(item)
+          return item !== value[index]
+        })
+        console.log(arr)
       }
       if (writing == true) {
         var key = metadata.user

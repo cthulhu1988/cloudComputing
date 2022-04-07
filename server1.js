@@ -87,14 +87,7 @@ wsNode.on("connection", (wsNode) => {
           console.log(err);
         }
       });
-
-      // fs.appendFile(userFile, myArray[1] + "\n", (err) => {
-      //   if (err) {
-      //     console.log(err);
-      //   }
-      // });
-
-      /////////// IF NOT A NEW USER MESSAGE /////////
+      /////////////// EXIT: NOT A SPECIAL SERVER MESSAGE /////////
     } else {
 
       var JSONObjArray = JSON.parse(charMsg)
@@ -154,14 +147,14 @@ wss.on("connection", (ws) => {
       addUser = true;
     }
 
-    /// LOGIN THRESHHOLD //
+    /////////// LOGIN THRESHHOLD - USE IF NO CURRENT USER LOGGED IN //
     if (metadata.loggedIn == false) {
       //// ADD NEW USER ////
       if (addUser == true) {
         addUser = false;
         funcaddUser(metadata, charString, ws);
       }
-      /// USER IN SYSTEM, ADD PASSWORD
+      /// USER IN SYSTEM, ADD PASSWORD /////
       else if (users.has(charString) && waitingForPass == false) {
         ws.send("send Password");
         metadata.user = charString;
@@ -242,12 +235,17 @@ wss.on("connection", (ws) => {
 
         /////////// DELETE DATA //////////////
       } else if (charString == "delete") {
+
         if (db.has(key)) {
-          db.set(key, [])
-          ws.send(`Data deleted for ${key}`)
-        } else {
-          ws.send("User to delete Not Present")
+          var value = db.get(key)
+          for (let i = 1; i <= value.length; i++) {
+            ws.send(`${i} ${value[i-1]}`)
+          }
+          ws.send(`Delete What Number:`)
         }
+
+        deleteInProgress = true
+
         /// Exit, Need to sync data ////
       } else if (charString == "exit") {
         serverNode.send(JSON.stringify(db.JSON()))

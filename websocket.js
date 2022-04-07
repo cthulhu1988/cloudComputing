@@ -1,19 +1,33 @@
 var databox, socket;
 
+function getRandomInt(max) {
+  return Math.floor(Math.random() * max);
+}
+
 function initiate() {
+  //// SERVER 1
+  
+  let server1 = new WebSocket("ws://139.177.205.73:5995");
+  //// SERVER 2
+  let server2 = new WebSocket("ws://45.33.96.41:5995");
+  //// Load balancing //////
+  //socket = server1
+  
+  randomServerNum = getRandomInt(1000);
+  if (randomServerNum % 2 == 0) {
+    socket = server2
+    console.log("server 2")
+  } else {
+    console.log("server 1")
+    socket = server1
+  }
+  console.log(socket)
   databox = document.getElementById("databox");
   var button = document.getElementById("button");
   var addUser = document.getElementById("userbtn")
   button.addEventListener("click", send);
   addUser.addEventListener("click", sendUser);
-
-  //socket = new WebSocket("ws://localhost:5995");
-
-
-  //// SERVER 1
-  //socket = new WebSocket("ws://139.177.205.73:5995");
-  //// SERVER 2
-  socket = new WebSocket("ws://45.33.96.41:5995");
+  ///var localhost = new WebSocket("ws://localhost:5995");
 
   socket.addEventListener("message", received);
 }

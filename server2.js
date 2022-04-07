@@ -81,12 +81,7 @@ wsNode.on("connection", (node) => {
         }
       });
 
-      // fs.appendFile(userFile, myArray[1] + "\n", (err) => {
-      //   if (err) {
-      //     console.log(err);
-      //   }
-      // });
-      /////////// IF NOT A NEW USER MESSAGE /////////
+      /////////////// EXIT: NOT A SPECIAL SERVER MESSAGE /////////
     } else {
       var JSONObjArray = JSON.parse(charMsg)
       // for each key in received message, add to it. 
@@ -117,7 +112,7 @@ serverNode.on("message", function message(data) {
 });
 
 ////////////////////END INTER SERVER COMMUNICATION //////////////////////////////////////////////
-
+//////////////////////////////////////////////////////////////
 //////////////////// CLIENT WEBSERVER ///////////////////////////////////////////////////////
 wss.on("listening", function () {
   console.log("listening on port 5995");
@@ -153,14 +148,14 @@ wss.on("connection", (ws) => {
       addUser = true;
     }
 
-    /// LOGIN THRESHHOLD - USE IF NO CURRENT USER LOGGED IN //
+    /////////// LOGIN THRESHHOLD - USE IF NO CURRENT USER LOGGED IN //
     if (metadata.loggedIn == false) {
       //// ADD NEW USER if no user logged in////
       if (addUser == true) {
         addUser = false;
         funcaddUser(metadata, charString, ws);
       }
-      /// USER IN SYSTEM, ADD PASSWORD
+      /// USER IN SYSTEM, ADD PASSWORD /////////////
       else if (users.has(charString) && waitingForPass == false) {
         ws.send("send Password");
         metadata.user = charString;
@@ -255,12 +250,6 @@ wss.on("connection", (ws) => {
         }
 
         deleteInProgress = true
-        // if (db.has(key)) {
-        //   db.set(key, [])
-        //   ws.send(`Data deleted for ${key}`)
-        // } else {
-        //   ws.send("User to delete not Present")
-        // }
 
         /// Exit, Need to sync data ////
       } else if (charString == "exit") {

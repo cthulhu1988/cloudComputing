@@ -6,13 +6,13 @@ function getRandomInt(max) {
 
 function initiate() {
   //// SERVER 1
-  
+
   let server1 = new WebSocket("ws://139.177.205.73:5995");
   //// SERVER 2
   let server2 = new WebSocket("ws://45.33.96.41:5995");
   //// Load balancing //////
   //socket = server1
-  
+
   randomServerNum = getRandomInt(1000);
   if (randomServerNum % 2 == 0) {
     socket = server2
@@ -48,6 +48,8 @@ function received(event) {
 function send() {
   var command = document.getElementById("command").value;
   socket.send(command);
+  var commandField = document.getElementById("command");
+  commandField.value = ""
 }
 
 function sendUser() {
@@ -55,8 +57,10 @@ function sendUser() {
   var pass = document.getElementById("pass").value;
   var combo = "," + user + "," + pass
   socket.send(combo);
-  pass = "";
-  user = "";
+  var userVal = document.getElementById("user");
+  var passVal = document.getElementById("pass");
+  passVal.value = "";
+  userVal.value = "";
 }
 
 window.addEventListener("load", initiate);

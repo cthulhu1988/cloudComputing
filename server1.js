@@ -287,6 +287,12 @@ function funcaddUser(metadata, charString, ws) {
     ws.send(`Added User: ${u}`);
     // Send message to other server about new user. 
     serverNode.send(`#${u},${p}`)
+    // Add to own file 
+    fs.appendFile(userFile, u + "\n" + p + "\n", (err) => {
+      if (err) {
+        console.log(err);
+      }
+    });
   }
 }
 

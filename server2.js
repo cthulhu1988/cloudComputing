@@ -75,6 +75,12 @@ wsNode.on("connection", (node) => {
       ////////// ADD NEW USER TO TEXT FILE //////////
       var trimOffHash = charString.substring(1);
       var myArray = trimOffHash.split(",");
+      var key = myArray[0]
+
+      if (!db.has(key)) {
+        db.set(key, [])
+      }
+
       fs.appendFile(userFile, myArray[0] + "\n" + myArray[1] + "\n", (err) => {
         if (err) {
           console.log(err);
@@ -226,7 +232,7 @@ wss.on("connection", (ws) => {
       } else if (charString == "read") {
 
         if (db.has(key)) {
-        ws.send(`Data for user: ${key}`)
+          ws.send(`Data for user: ${key}`)
           var value = db.get(key)
           if (value.length < 1) {
             ws.send("No Data Set yet for " + key)

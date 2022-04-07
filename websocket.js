@@ -11,9 +11,9 @@ function initiate() {
 
 
   //// SERVER 1
-  // socket = new WebSocket("ws://139.177.205.73:5995");
+  socket = new WebSocket("ws://139.177.205.73:5995");
   //// SERVER 2
-  socket = new WebSocket("ws://45.33.96.41:5995");
+  //socket = new WebSocket("ws://45.33.96.41:5995");
 
   socket.addEventListener("message", received);
 }

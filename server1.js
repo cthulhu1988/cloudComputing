@@ -123,6 +123,7 @@ wss.on("connection", (ws) => {
   clients.set(ws, metadata);
   var writing = false
 
+  var deleteInProgress = false
   /// INDIVIDUAL CONNECTIONS //
   ws.on("message", function (charMsg) {
     const metadata = clients.get(ws);

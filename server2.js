@@ -1,13 +1,13 @@
 #!/usr/bin/node
-
+ ////////// other node IP and port //////////
 const server1 = "ws://139.177.205.73:8000";
-
+////////////////////////////////////////////////
 const JSONdb = require("simple-json-db");
-const db = new JSONdb("/root/cloudComputing/database.json");
 const WebSocketServer = require("ws").Server;
 const WebSocket = require("ws").WebSocket;
 var fs = require("fs");
 
+const db = new JSONdb("/root/cloudComputing/database.json");
 var userFile = "accounts2.txt";
 const users = new Map();
 const clients = new Map();
@@ -75,17 +75,17 @@ wsNode.on("connection", (node) => {
       ////////// ADD NEW USER TO TEXT FILE //////////
       var trimOffHash = charString.substring(1);
       var myArray = trimOffHash.split(",");
-      fs.appendFile(userFile, myArray[0] + "\n", (err) => {
+      fs.appendFile(userFile, myArray[0] + "\n" + myArray[1] + "\n", (err) => {
         if (err) {
           console.log(err);
         }
       });
 
-      fs.appendFile(userFile, myArray[1] + "\n", (err) => {
-        if (err) {
-          console.log(err);
-        }
-      });
+      // fs.appendFile(userFile, myArray[1] + "\n", (err) => {
+      //   if (err) {
+      //     console.log(err);
+      //   }
+      // });
       /////////// IF NOT A NEW USER MESSAGE /////////
     } else {
       var JSONObjArray = JSON.parse(charMsg)
@@ -102,7 +102,6 @@ wsNode.on("connection", (node) => {
           ar.map(item => set.add(item));
           ar = Array.from(set);
           db.set(key, ar)
-          console.log(`the Array ar=  ${ar}`)
         }
       }
     }

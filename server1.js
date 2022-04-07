@@ -1,18 +1,19 @@
 #!/usr/bin/node
-
+ ////////// other node IP and port //////////
 const server2 = "ws://45.33.96.41:8001";
 
 const JSONdb = require("simple-json-db");
-const db = new JSONdb("/root/cloudComputing/database.json");
 const WebSocketServer = require("ws").Server;
 const WebSocket = require("ws").WebSocket;
 var fs = require("fs");
 
-var userFile = "accounts1.txt";
+const db = new JSONdb("/root/cloudComputing/database.json");
+const userFile = "accounts1.txt";
 var serverNode;
 const clients = new Map();
 const users = new Map();
 var authClients = [];
+
 // Socket to talk to other server
 const wsNode = new WebSocketServer({
   port: 8000
@@ -56,7 +57,6 @@ wsNode.on("connection", (wsNode) => {
     var charString = String(charMsg);
     charString = charString.toLowerCase();
     console.log("From server 2 " + charString);
-    wsNode.send("Got your message");
 
     // Check for new user,other stuff in server message//
     var leadingChar = charString.substring(0, 1);
@@ -82,17 +82,17 @@ wsNode.on("connection", (wsNode) => {
       ////////// ADD NEW USER TO TEXT FILE //////////
       var trimOffHash = charString.substring(1);
       var myArray = trimOffHash.split(",");
-      fs.appendFile(userFile, myArray[0] + "\n", (err) => {
+      fs.appendFile(userFile, myArray[0] + "\n" + myArray[1] + "\n", (err) => {
         if (err) {
           console.log(err);
         }
       });
 
-      fs.appendFile(userFile, myArray[1] + "\n", (err) => {
-        if (err) {
-          console.log(err);
-        }
-      });
+      // fs.appendFile(userFile, myArray[1] + "\n", (err) => {
+      //   if (err) {
+      //     console.log(err);
+      //   }
+      // });
 
       /////////// IF NOT A NEW USER MESSAGE /////////
     } else {
@@ -100,25 +100,18 @@ wsNode.on("connection", (wsNode) => {
       var JSONObjArray = JSON.parse(charMsg)
       // For Each Key in message, add to data. 
       for (const key in JSONObjArray) {
-        console.log("const key: " + key)
         if (db.has(key)) {
           // this is the items in that array
           var jsonKeyArr = JSONObjArray[key]
-          console.log("json array of key " + jsonKeyArr)
           // get array and push new values 
           var thisDBArray = db.get(key)
-          console.log("db array from server 1 db.get(key) " + thisDBArray)
           for (let i = 0; i < jsonKeyArr.length; i++) {
-            console.log(`the item ${jsonKeyArr[i]}`)
             thisDBArray.push(jsonKeyArr[i])
           }
-          console.log("the current array " + thisDBArray)
           var set = new Set();
           thisDBArray.forEach(item => set.add(item))
           cleanArr = Array.from(set);
           db.set(key, cleanArr)
-          console.log("clean " + cleanArr)
-          console.log(`the dbArray =  ${thisDBArray}`)
         }
       }
     }

@@ -173,6 +173,12 @@ wss.on("connection", (ws) => {
       }
       var key = metadata.user
       /////////////////////////////////////////////////
+
+      if (deleteInProgress == true) {
+        ws.send(`deleting ${charString}`)
+        deleteInProgress = false
+      }
+
       if (writing == true) {
         var key = metadata.user
         if (db.has(key)) {
@@ -204,12 +210,12 @@ wss.on("connection", (ws) => {
         /////////// DELETE DATA //////////////
       } else if (charString == "delete") {
 
-        ws.send(`Delete What Number:`)
         if (db.has(key)) {
           var value = db.get(key)
           for (let i = 1; i <= value.length; i++) {
-            ws.send(`${i} ${value}`)
+            ws.send(`${i} ${value[i-1]}`)
           }
+          ws.send(`Delete What Number:`)
         }
 
         deleteInProgress = true

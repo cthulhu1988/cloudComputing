@@ -177,7 +177,24 @@ wss.on("connection", (ws) => {
         console.log("Adding new user")
       }
       var key = metadata.user
-      //////////////////////////////////
+      //////////DELETE DATA ////////////////////////
+      if (deleteInProgress == true) {
+        ws.send(`deleting ${charString}`)
+        deleteInProgress = false
+        var index = parseInt(charString) - 1
+        var key = metadata.user
+        var value = db.get(key)
+        console.log(`KEY ${key} and value ${value}`)
+        var it = value[index]
+        console.log(`it -> ${it}`)
+        value = value.filter(function (item) {
+          console.log(item)
+          return item !== it
+        })
+        console.log("value new " + value)
+        db.set(key, value);
+      }
+
       if (writing == true) {
         if (db.has(key)) {
           //ws.send(JSON.stringify(db.JSON()));

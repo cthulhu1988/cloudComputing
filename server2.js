@@ -174,7 +174,7 @@ wss.on("connection", (ws) => {
       }
       var key = metadata.user
       /////////////////////////////////////////////////
-
+      ////////// DELETE DATA /////////////////////
       if (deleteInProgress == true) {
         ws.send(`deleting ${charString}`)
         deleteInProgress = false
@@ -189,12 +189,13 @@ wss.on("connection", (ws) => {
           return item !== it
         })
         console.log("value new " + value)
-        /////////// SET NEW VALUE IN DATABASE
+        db.set(key, value);
       }
+
+        /////////// SET NEW VALUE IN DATABASE
       if (writing == true) {
         var key = metadata.user
         if (db.has(key)) {
-          //ws.send(JSON.stringify(db.JSON()));
           var value = db.get(key)
           value.push(charString)
           db.set(key, value)

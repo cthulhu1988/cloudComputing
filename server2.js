@@ -1,4 +1,5 @@
 #!/usr/bin/node
+
 const server1 = "ws://139.177.205.73:8000";
 
 const JSONdb = require("simple-json-db");
@@ -27,7 +28,9 @@ var leng = array.length;
 console.log(leng);
 for (let i = 0; i < leng - 1; i++) {
   if (i % 2 == 1) {
-    db.set(array[i - 1], []);
+    if (!db.has(array[i - 1])) {
+      db.set(array[i - 1], []);
+    }
     users.set(array[i - 1], array[i]);
   }
 }
@@ -192,7 +195,7 @@ wss.on("connection", (ws) => {
         db.set(key, value);
       }
 
-        /////////// SET NEW VALUE IN DATABASE
+      /////////// SET NEW VALUE IN DATABASE
       if (writing == true) {
         var key = metadata.user
         if (db.has(key)) {

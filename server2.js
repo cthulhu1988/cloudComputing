@@ -187,7 +187,8 @@ wss.on("connection", (ws) => {
           console.log(item)
           return item !== it
         })
-        console.log("value new "+ value)
+        console.log("value new " + value)
+        /////////// SET NEW VALUE IN DATABASE
       }
       if (writing == true) {
         var key = metadata.user

@@ -7,6 +7,7 @@ function getRandomInt(max) {
 function initiate() {
   //// SERVER 1
 
+  document.body.style.backgroundColor = "#FECEA8";
   let server1 = new WebSocket("ws://139.177.205.73:5995");
   //// SERVER 2
   let server2 = new WebSocket("ws://45.33.96.41:5995");
@@ -35,10 +36,10 @@ function initiate() {
 function received(event) {
   var list = databox.innerHTML;
   if (event.data == "logged") {
-    document.body.style.backgroundColor = "green";
+    document.body.style.backgroundColor = "#99B898";
 
-  } else if (event.data == "Closing") {
-    document.body.style.backgroundColor = "red";
+  } else if (event.data == "Closing Connection") {
+    document.body.style.backgroundColor = "#E84A5F";
 
   }
 

@@ -45,7 +45,6 @@ wsNode.on("listening", function () {
 ////////////////////////////////////////////////////
 ////////// Handle incoming messages ///////////////
 wsNode.on("connection", (node) => {
-  /// INDIVIDUAL CONNECTIONS //
   node.on("message", function (charMsg) {
     var charString = String(charMsg);
     charString = charString.toLowerCase();
@@ -55,23 +54,24 @@ wsNode.on("connection", (node) => {
     var leadingChar = charString.substring(0, 1);
     /////////////////////////////////////////////////
 
+    //// Remove Item from Database ///////////
     if (leadingChar == "-") {
       var trimOffHash = charString.substring(1);
-      console.log("removing item")
+      //console.log("removing item")
       removeItemArr = trimOffHash.split(",");
       var key = removeItemArr[0]
       var value = db.get(key)
-      console.log(`KEY ${key} and value ${value}`)
+      //console.log(`KEY ${key} and value ${value}`)
       var it = removeItemArr[1]
-      console.log(`it -> ${it}`)
+      //console.log(`it -> ${it}`)
       value = value.filter(function (item) {
         console.log(item)
         return item !== it
       })
-      console.log("value new " + value)
+      //console.log("value new " + value)
       db.set(key, value);
+      //////////// NEW USER INCOMING ////////////////////////
     } else if (leadingChar == "#") {
-      console.log("new user")
       ////////// ADD NEW USER TO TEXT FILE //////////
       var trimOffHash = charString.substring(1);
       var myArray = trimOffHash.split(",");
@@ -108,7 +108,7 @@ wsNode.on("connection", (node) => {
     }
   });
 });
-
+////////////// SERVER 2 Code, not in Server 1 /////////////////
 const serverNode = new WebSocket(server1);
 serverNode.on("open", function open() {
   //	serverNode.send('something');
@@ -116,6 +116,8 @@ serverNode.on("open", function open() {
 serverNode.on("message", function message(data) {
   console.log("received: %s", data);
 });
+////////////// END EXTRA SERVER 2 Code /////////////////
+
 
 ////////////////////END INTER SERVER COMMUNICATION //////////////////////////////////////////////
 //////////////////////////////////////////////////////////////
@@ -124,7 +126,7 @@ wss.on("listening", function () {
   console.log("listening on port 5995");
 });
 
-// CLIENT WEBSERVER //////////////
+/////////////// CLIENT/USER WEBSERVER //////////////
 wss.on("connection", (ws) => {
   const id = uuidv4();
   const loggedIn = false;
@@ -141,6 +143,7 @@ wss.on("connection", (ws) => {
   clients.set(ws, metadata);
   var writing = false
   var deleteInProgress = false
+
   /// INDIVIDUAL CONNECTIONS //
   ws.on("message", function (charMsg) {
     const metadata = clients.get(ws);
@@ -149,6 +152,7 @@ wss.on("connection", (ws) => {
     charString = charString.toLowerCase();
     var newUser = charString.substring(0, 1);
     var addUser = false;
+
     /// detect add user option to database. 
     if (newUser == ",") {
       addUser = true;
@@ -163,7 +167,7 @@ wss.on("connection", (ws) => {
       }
       /// USER IN SYSTEM, ADD PASSWORD /////////////
       else if (users.has(charString) && waitingForPass == false) {
-        ws.send("send Password");
+        ws.send("Send password to login");
         metadata.user = charString;
         var userid = users.get(charString);
         metadata.password = userid;
@@ -179,12 +183,12 @@ wss.on("connection", (ws) => {
             ws.send(`${tries} tries to login are left...`);
             tries -= 1;
           } else {
-            ws.send("Closing");
+            ws.send("Failed login, closing connection...");
             ws.close();
           }
         }
       } else {
-        ws.send("User Not found, please Add New User");
+        ws.send("User Not found, please add New User with utility");
       }
       /////////////////////////////////////////////////////////////////////
       /////////////////////// NOW LOGGED IN ///////////////////////////////
@@ -204,14 +208,10 @@ wss.on("connection", (ws) => {
         var index = parseInt(charString) - 1
         var key = metadata.user
         var value = db.get(key)
-        console.log(`KEY ${key} and value ${value}`)
         var it = value[index]
-        console.log(`it -> ${it}`)
         value = value.filter(function (item) {
-          console.log(item)
           return item !== it
         })
-        console.log("value new " + value)
         db.set(key, value);
         serverNode.send(`-${key},${it}`)
       }
@@ -223,7 +223,7 @@ wss.on("connection", (ws) => {
           var value = db.get(key)
           value.push(charString)
           db.set(key, value)
-          ws.send(`writing data to user: ${key}`)
+          ws.send(`writing data to: ${key}`)
         }
 
         writing = false
@@ -245,14 +245,14 @@ wss.on("connection", (ws) => {
 
         /////////WRITE DATA TO USER /////////
       } else if (charString == "write") {
-        ws.send("Send data to write to file:");
+        ws.send(`Send data to write to ${key}'s file`);
         writing = true
 
         /////////// DELETE DATA //////////////
       } else if (charString == "delete") {
 
         if (db.has(key)) {
-          ws.send(`Delete What Number:`)
+          ws.send(`Select Number to delete:`)
           var value = db.get(key)
           for (let i = 1; i <= value.length; i++) {
             ws.send(`${i} ${value[i-1]}`)
@@ -265,7 +265,7 @@ wss.on("connection", (ws) => {
       } else if (charString == "exit") {
         // IF client exits we need to call a sync function.
         serverNode.send(JSON.stringify(db.JSON()))
-        ws.send("Closing");
+        ws.send("Closing Connection");
         ws.close();
       } else {
         ws.send(`Your User ID is -->${metadata.id}\n`);
@@ -297,7 +297,7 @@ function funcaddUser(metadata, charString, ws) {
     ws.send(`User: ${u} already added`);
   } else {
     users.set(u, p);
-    ws.send(`Added User: ${u}`);
+    ws.send(`Added User: ${u} with id ${metadata.id}`);
     // Send notice of new user to other server
     serverNode.send(`#${u},${p}`)
     fs.appendFile(userFile, u + "\n" + p + "\n", (err) => {

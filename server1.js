@@ -9,10 +9,10 @@ var fs = require("fs");
 
 const db = new JSONdb("/root/cloudComputing/database.json");
 const userFile = "accounts1.txt";
-var serverNode;
-const clients = new Map();
 const users = new Map();
+const clients = new Map();
 var authClients = [];
+var serverNode;
 
 // Socket to talk to other server
 const wsNode = new WebSocketServer({
@@ -42,7 +42,8 @@ wsNode.on("listening", function () {
   console.log("listening on port 8000");
 });
 
-// WEBSERVER
+////////////////////////////////////////////////////
+////////// Handle incoming messages ///////////////
 wsNode.on("connection", (wsNode) => {
   serverNode = new WebSocket(server2);
   serverNode.on("open", function open() {
@@ -62,23 +63,23 @@ wsNode.on("connection", (wsNode) => {
     var leadingChar = charString.substring(0, 1);
     ////////////////////////////////////////////////
 
+    //// Remove Item from Database ///////////
     if (leadingChar == "-") {
       var trimOffHash = charString.substring(1);
-      console.log("removing item")
       removeItemArr = trimOffHash.split(",");
       var key = removeItemArr[0]
       var value = db.get(key)
-      console.log(`KEY ${key} and value ${value}`)
+      //console.log(`KEY ${key} and value ${value}`)
       var it = removeItemArr[1]
-      console.log(`it -> ${it}`)
+      //console.log(`it -> ${it}`)
       value = value.filter(function (item) {
-        console.log(item)
+        //console.log(item)
         return item !== it
       })
-      console.log("value new " + value)
+      //console.log("value new " + value)
       db.set(key, value);
+      //////////// NEW USER INCOMING ////////////////////////
     } else if (leadingChar == "#") {
-      console.log("new user")
       ////////// ADD NEW USER TO TEXT FILE //////////
       var trimOffHash = charString.substring(1);
       var myArray = trimOffHash.split(",");
@@ -92,6 +93,7 @@ wsNode.on("connection", (wsNode) => {
           console.log(err);
         }
       });
+
       /////////////// EXIT: NOT A SPECIAL SERVER MESSAGE /////////
     } else {
 
@@ -115,6 +117,8 @@ wsNode.on("connection", (wsNode) => {
     }
   });
 });
+
+
 ///////////////////// END Inter server communication //////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 //////////////////// CLIENT WEBSERVER ///////////////////////////////////////////////////////
@@ -122,7 +126,7 @@ wss.on("listening", function () {
   console.log("listening on port 5995");
 });
 
-// Client WEBSERVER ////////////////
+/////////////// CLIENT/USER WEBSERVER //////////////
 wss.on("connection", (ws) => {
   const id = uuidv4();
   const loggedIn = false;
@@ -138,8 +142,8 @@ wss.on("connection", (ws) => {
   var tries = 2;
   clients.set(ws, metadata);
   var writing = false
-
   var deleteInProgress = false
+
   /// INDIVIDUAL CONNECTIONS //
   ws.on("message", function (charMsg) {
     const metadata = clients.get(ws);
@@ -147,6 +151,7 @@ wss.on("connection", (ws) => {
     charString = charString.toLowerCase();
     var newUser = charString.substring(0, 1);
     var addUser = false;
+
     /// detect add user option to database. 
     if (newUser == ",") {
       addUser = true;
@@ -161,7 +166,7 @@ wss.on("connection", (ws) => {
       }
       /// USER IN SYSTEM, ADD PASSWORD /////
       else if (users.has(charString) && waitingForPass == false) {
-        ws.send("send Password");
+        ws.send("Send password to login");
         metadata.user = charString;
         var userid = users.get(charString);
         metadata.password = userid;
@@ -177,12 +182,12 @@ wss.on("connection", (ws) => {
             ws.send(`${tries} tries to login are left...`);
             tries -= 1;
           } else {
-            ws.send("Closing");
+            ws.send("Failed login, closing connection...");
             ws.close();
           }
         }
       } else {
-        ws.send("User Not found, please Add New User");
+        ws.send("User Not found, please add New User with utility");
       }
       /////////////////////////////////////////////////////////////////////////////
       /////////////////////// NOW LOGGED IN ///////////////////////////////
@@ -201,24 +206,19 @@ wss.on("connection", (ws) => {
         var index = parseInt(charString) - 1
         var key = metadata.user
         var value = db.get(key)
-        console.log(`KEY ${key} and value ${value}`)
         var it = value[index]
-        console.log(`it -> ${it}`)
         value = value.filter(function (item) {
-          console.log(item)
           return item !== it
         })
-        console.log("value new " + value)
         db.set(key, value);
       }
 
       if (writing == true) {
         if (db.has(key)) {
-          //ws.send(JSON.stringify(db.JSON()));
           var value = db.get(key)
           value.push(charString)
           db.set(key, value)
-          ws.send(`writing data to user: ${key}`)
+          ws.send(`writing data to: ${key}`)
         }
 
         writing = false
@@ -238,14 +238,14 @@ wss.on("connection", (ws) => {
 
         /////////WRITE DATA TO USER /////////
       } else if (charString == "write") {
-        ws.send("Send data to write to file:");
+        ws.send(`Send data to write to ${key}'s file`);
         writing = true
 
         /////////// DELETE DATA //////////////
       } else if (charString == "delete") {
 
         if (db.has(key)) {
-          ws.send(`Delete What Number:`)
+          ws.send(`Select Number to delete:`)
           var value = db.get(key)
           for (let i = 1; i <= value.length; i++) {
             ws.send(`${i} ${value[i-1]}`)
@@ -257,7 +257,7 @@ wss.on("connection", (ws) => {
         /// Exit, Need to sync data ////
       } else if (charString == "exit") {
         serverNode.send(JSON.stringify(db.JSON()))
-        ws.send("Closing");
+        ws.send("Closing Connection");
         ws.close();
       } else {
         ws.send(`Your User ID is -->${metadata.id}\n`);
@@ -289,7 +289,7 @@ function funcaddUser(metadata, charString, ws) {
     ws.send(`User: ${u} already added`);
   } else {
     users.set(u, p);
-    ws.send(`Added User: ${u}`);
+    ws.send(`Added User: ${u} with id ${metadata.id}`);
     // Send message to other server about new user. 
     serverNode.send(`#${u},${p}`)
     // Add to own file 
@@ -299,25 +299,6 @@ function funcaddUser(metadata, charString, ws) {
       }
     });
   }
-}
-
-function readFile(users) {
-  var array = fs.readFileSync(userFile).toString().split("\n");
-  var myString = "";
-  var leng = array.length;
-  for (let i = 0; i < leng - 1; i++) {
-    if (i % 2 == 1) {
-      myString += array[i - 1];
-      myString += " ";
-      myString += array[i];
-      myString += ",";
-
-      users.set(array[i - 1], array[i]);
-    }
-  }
-  console.log(myString);
-  var ar = myString.split(",");
-  return ar;
 }
 
 function uuidv4() {

@@ -52,5 +52,7 @@
 
     Git pull repo to client and both servers. 
     Run the makefile.
-    Modify server1 and server2 on line to reflect IP address of servers
-    Modify index.html to include servers. 
+    Modify server1 and server2 on line 3 to reflect IP address and port of
+    servers you want to use in the cloud. Note that
+    each server references the other server in the cloud.  
+    Modify websocket.js to include servers you specifed in server1 and server2. websocket.js will randomly choose a server from the two listed when the page is loaded.  

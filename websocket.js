@@ -5,9 +5,9 @@ function getRandomInt(max) {
 }
 
 function initiate() {
-  //// SERVER 1
-
   document.body.style.backgroundColor = "#FECEA8";
+  
+  //// SERVER 1
   let server1 = new WebSocket("ws://139.177.205.73:5995");
   //// SERVER 2
   let server2 = new WebSocket("ws://45.33.96.41:5995");

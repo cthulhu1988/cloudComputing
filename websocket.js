@@ -43,7 +43,7 @@ function received(event) {
 
   }
 
-  databox.innerHTML = list  + "Received: " + event.data + "<br>";
+  databox.innerHTML = list + "Received: " + event.data + "<br>";
 }
 
 function send() {

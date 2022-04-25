@@ -1,21 +1,26 @@
-html, body {
-}
+html,
+body {}
 
-#pass{
+#pass {
   font-size: 1.5em;
 }
-#userbtn, #button {
+
+#userbtn,
+#button {
   font-size: 1.5em;
 
 }
-#addUser{
-padding-top: 350px;
+
+#addUser {
+  padding-top: 350px;
 
 }
-#user{
+
+#user {
   font-size: 1.5em;
 }
-#command{
+
+#command {
   font-size: 1.5em;
 }
 
@@ -25,6 +30,7 @@ padding-top: 350px;
   padding: 20px;
   border: 1px solid #999999;
 }
+
 #databox {
   font-size: 2em;
   float: left;

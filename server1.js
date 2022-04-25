@@ -87,7 +87,8 @@ wsNode.on("connection", (wsNode) => {
       if (!db.has(key)) {
         db.set(key, [])
       }
-
+      users.set(myArray[0], myArray[1])
+      console.log(users)
       fs.appendFile(userFile, myArray[0] + "\n" + myArray[1] + "\n", (err) => {
         if (err) {
           console.log(err);
